@@ -1,0 +1,42 @@
+schema_version: 1
+lessons:
+  - id: "06-hybrid-key-establishment"
+    title: "Hybrid key establishment (X25519 + ML-KEM-768)"
+    module: "06-post-quantum"
+    category: "hybrid-kem"
+    difficulty: "advanced"
+    status: "experimental"
+    summary: "Combine classical and post-quantum key exchange so that breaking one is not enough."
+    recommended_for_new_systems: true
+    labels: ["public"]
+    references:
+      - name: "age v1.3.0 release: post-quantum hybrid recipients"
+        url: "https://github.com/FiloSottile/age/releases/tag/v1.3.0"
+      - name: "C2SP: age specification"
+        url: "https://github.com/C2SP/C2SP/blob/main/age.md"
+      - name: "IETF draft: Post-quantum hybrid ECDHE-MLKEM key agreement for TLS 1.3"
+        url: "https://datatracker.ietf.org/doc/draft-ietf-tls-ecdhe-mlkem/"
+    vectors: ["vectors/post-quantum/hybrid-key-establishment.yaml"]
+    guide:
+      what: >-
+        Run X25519 and ML-KEM-768 together and derive the session key from both shared secrets
+        (and the transcript). An attacker must break both components to recover the key.
+      problem: >-
+        Post-quantum schemes are young; classical ones fall to quantum computers. A hybrid keeps
+        today's security while adding post-quantum protection.
+      inputs_outputs: >-
+        age 1.3 encodes hybrid recipients as age1pq1... and identities as AGE-SECRET-KEY-PQ-1...
+        Hybrid recipients are much longer than classic age1 recipients because they carry an
+        ML-KEM encapsulation key.
+      key_management: >-
+        Generate with age-keygen -pq. Older age clients, older SOPS versions, and some browser
+        libraries do not understand these recipients; pin and test every client first. SOPS
+        supports them from 3.12.
+      common_mistakes:
+        - "Concatenating secrets without a proper combiner or KDF that includes the transcript."
+        - "Mixing hybrid and classic recipients in one file, so the classic one becomes the weakest link."
+        - "Assuming every age implementation supports age1pq recipients."
+      new_systems: "Yes for long-lived confidentiality, once every client in the deployment is tested."
+      reproduce: |
+        p123 vectors verify --lesson 06-hybrid-key-establishment
+        age-keygen -pq -o /tmp/pq.txt && age-keygen -y /tmp/pq.txt

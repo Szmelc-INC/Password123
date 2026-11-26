@@ -1,0 +1,48 @@
+schema_version: 1
+lessons:
+  - id: "03-rsa-oaep"
+    title: "RSA-OAEP"
+    module: "03-asymmetric-and-kex"
+    category: "public-key-encryption"
+    difficulty: "intermediate"
+    status: "stable"
+    summary: "RSA encryption with randomized OAEP padding. Secure only with good key generation and padding."
+    recommended_for_new_systems: false
+    labels: ["public", "encrypted", "browser-decryptable"]
+    references:
+      - name: "RFC 8017: PKCS #1 v2.2, RSA Cryptography Specifications"
+        url: "https://www.rfc-editor.org/rfc/rfc8017"
+      - name: "PKCS #1 v2.1 OAEP test vectors (pyca/cryptography mirror)"
+        url: "https://github.com/pyca/cryptography/tree/main/vectors/cryptography_vectors/asymmetric/RSA/pkcs-1v2-1d2-vec"
+    vectors: ["vectors/asymmetric/rsa-oaep.yaml"]
+    guide:
+      what: >-
+        RSA computes c = m^e mod n. OAEP first mixes the message with a random seed through two mask-generation steps, so the same message encrypts differently every time and the ciphertext is not malleable in useful ways.
+      problem: >-
+        Anyone with the public key (n, e) can encrypt; only the holder of the private exponent d can decrypt. It was historically used to transport symmetric keys.
+      inputs_outputs: >-
+        Input: a public key, a short message (at most k - 2*hLen - 2 bytes, 190 bytes for 2048-bit keys with SHA-256), an optional label. Output: a k-byte ciphertext.
+      key_management: >-
+        Generate p and q independently from a vetted library. Use at least 2048-bit moduli and e = 65537. Protect d, p and q; rotate keys by re-encrypting data keys.
+      common_mistakes:
+        - "Textbook RSA without padding: deterministic and malleable."
+        - "PKCS#1 v1.5 encryption padding, which allows Bleichenbacher padding-oracle attacks."
+        - "Bad key generation, such as primes that are too close (Fermat) or shared between keys."
+        - "Encrypting bulk data with RSA instead of wrapping a symmetric key."
+      new_systems: "Prefer X25519 or ML-KEM key establishment (or HPKE). Use RSA-OAEP only for compatibility."
+      reproduce: |
+        p123 vectors verify --lesson 03-rsa-oaep
+    challenge:
+      prompt: 'This 2048-bit RSA key was generated badly: its two primes are very close together. Factor n, rebuild the private key, and decrypt the RSA-OAEP ciphertext (SHA-256, MGF1-SHA-256, label "password123").'
+      public_inputs:
+        ciphertext_hex: 7edf8f5a62d4544d47193852b42d2e10fe0c50e535600fb391440be4366229f2fc1f5537251d8069375016180150624963c9e0b3b4f0971b2f8ccc3bac2d955d1dcc7cdd5d07c5aa20192d68bec65aeb019f3d39a66f11436525e098654623c1f47daf74ec90246e5dbd988963d15f1fca75337f27dcdfb322c00baad398821c2755e2adfa907001c63b398c91b86189bb186b97ba1a3bf447b96473a3ce8a3c691561c2549ca7c36209171f101bdd52bb4f961edd4028e4bca303db9d8911da170d7756be99204c175f8440702100acc9b329b297526db7dbc3f341fd3f8683db22d8c0093b1634c1e11e3d0f36e15c8763cfa850734b7d25a5945bb896425b
+        e: 65537
+        n_hex: ae36ecc8b406c065803924d27b2a63ccec7a0b21d338b99cb4875937ae273182a703cb41160874c53d4eca292aa537615f0bfed31605844dd506e42ed249e690f8b23c314221eec7f89d55b5af20ac79625f274619a0b3c6ab8acf783e8162fc096f75ad4c3ecfb119230d7c8f76324d40b6093f4273d5a265cf3bdb6fbd6f29fbb06f8ca88c81d0f2b28791bc106ae7c81e719bf04fe9e393bdad6c125e7a3e76a99c4d19c1ce41c56340dd0086d10c77301b9355a7a697c8878e814d03e2068dea00b79d9943705d38d04eafbe99c317fa08214af524f8626a8ab5f480f7c44e3126a39bd2fea0088cd5cc1c6613498880946a361993dbf099bcec3ba1d8e3
+        oaep_hash: SHA-256
+        oaep_label_utf8: password123
+      submit: p, q and the plaintext
+    payload:
+      path: "payloads/03-rsa-oaep.age"
+      format: "application/json"
+      sha256: "4ad933f0c1337796c7efaf7c79c6abc6251b98c5767730e2d8acac2177e95ff4"
+      label: "browser-decryptable"

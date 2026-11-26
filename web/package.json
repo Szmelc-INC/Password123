@@ -1,0 +1,17 @@
+{
+  "name": "password123-portal-bundle",
+  "private": true,
+  "description": "Builds docs/assets/age.js from a pinned typage (age-encryption) release.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild entry.js --bundle --format=esm --target=es2022 --legal-comments=inline --charset=utf8 --outfile=../docs/assets/age.js",
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "age-encryption": "0.3.1"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.12"
+  }
+}

@@ -1,0 +1,16 @@
+schema_version: 1
+lesson_id: "06-ml-dsa-65"
+algorithm: "ML-DSA-65 (FIPS 204)"
+vectors:
+  - id: "cctv-accumulated-100"
+    kind: "community"
+    status: "verified"
+    verifier: "ml-dsa-65-accumulated"
+    source:
+      document: "C2SP Community Cryptography Test Vectors (CCTV), ML-DSA accumulated vectors"
+      test_case: "ML-DSA-65, 100 iterations, deterministic signing of the empty message"
+      url: "https://c2sp.org/CCTV/ML-DSA"
+    params:
+      iterations: { int: 100 }
+    expected:
+      accumulated: { hex: "8358a1843220194417cadbc2651295cd8fc65125b5a5c1a239a16dc8b57ca199" }

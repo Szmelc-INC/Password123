@@ -1,0 +1,38 @@
+schema_version: 1
+lessons:
+  - id: "01-enigma-m3"
+    title: "Enigma M3"
+    module: "01-classical"
+    category: "rotor-machine"
+    difficulty: "intermediate"
+    status: "draft"
+    summary: "Rotor machine substitution and the operational mistakes that broke it."
+    recommended_for_new_systems: false
+    labels: ["public"]
+    references:
+      - name: "Wikipedia: Enigma machine"
+        url: "https://en.wikipedia.org/wiki/Enigma_machine"
+      - name: "Wikipedia: Cryptanalysis of the Enigma"
+        url: "https://en.wikipedia.org/wiki/Cryptanalysis_of_the_Enigma"
+    vectors: []
+    guide:
+      what: >-
+        Each key press sends current through a plugboard, three rotors, a reflector, and back.
+        The rotors step on every key press, so the substitution alphabet changes with each letter.
+      problem: >-
+        It gave armed forces a portable machine cipher with a very large key space (rotor order,
+        ring settings, start positions, plugboard pairs).
+      inputs_outputs: >-
+        Input: letters and the daily key plus a message key. Output: letters. Because of the
+        reflector, encryption equals decryption and no letter ever encrypts to itself.
+      key_management: >-
+        Daily key sheets were distributed in advance; operators chose message keys. Predictable
+        message keys, repeated keys and stereotyped messages ("cribs") were exploited by Polish and
+        British cryptanalysts.
+      common_mistakes:
+        - "Thinking the key space alone decides security; the self-encryption property and cribs mattered more."
+        - "Ignoring operational procedure: key reuse and predictable formats broke the system."
+      new_systems: "Never; study it for design and operational lessons."
+      reproduce: |
+        # Draft lesson: no verified implementation or published vector yet.
+        p123 lessons show 01-enigma-m3

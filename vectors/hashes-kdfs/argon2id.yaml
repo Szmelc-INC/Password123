@@ -1,0 +1,43 @@
+schema_version: 1
+lesson_id: "04-argon2id"
+algorithm: "Argon2id, version 0x13"
+vectors:
+  - id: "phc-reference-m65536-t2-p1"
+    kind: "reference-implementation"
+    status: "verified"
+    verifier: "argon2id"
+    source:
+      document: "Argon2 reference implementation test suite (P-H-C/phc-winner-argon2, src/test.c)"
+      test_case: "Argon2id, t=2, m=2^16 KiB, p=1, \"password\" / \"somesalt\""
+      url: "https://github.com/P-H-C/phc-winner-argon2/blob/master/src/test.c"
+    params:
+      time_cost: { int: 2 }
+      memory_kib: { int: 65536 }
+      parallelism: { int: 1 }
+      tag_len: { int: 32 }
+    inputs:
+      password: { utf8: "password" }
+      salt: { utf8: "somesalt" }
+    expected:
+      tag: { hex: "09316115d5cf24ed5a15a31a3ba326e5cf32edc24702987c02b6566f61913cf7" }
+      encoded: { utf8: "$argon2id$v=19$m=65536,t=2,p=1$c29tZXNhbHQ$CTFhFdXPJO1aFaMaO6Mm5c8y7cJHAph8ArZWb2GRPPc" }
+  - id: "phc-reference-m256-t2-p2"
+    kind: "reference-implementation"
+    status: "verified"
+    verifier: "argon2id"
+    source:
+      document: "Argon2 reference implementation test suite (P-H-C/phc-winner-argon2, src/test.c)"
+      test_case: "Argon2id, t=2, m=2^8 KiB, p=2, \"password\" / \"somesalt\""
+      url: "https://github.com/P-H-C/phc-winner-argon2/blob/master/src/test.c"
+    params:
+      time_cost: { int: 2 }
+      memory_kib: { int: 256 }
+      parallelism: { int: 2 }
+      tag_len: { int: 32 }
+    inputs:
+      password: { utf8: "password" }
+      salt: { utf8: "somesalt" }
+    expected:
+      tag: { hex: "6d093c501fd5999645e0ea3bf620d7b8be7fd2db59c20d9fff9539da2bf57037" }
+      encoded: { utf8: "$argon2id$v=19$m=256,t=2,p=2$c29tZXNhbHQ$bQk8UB/VmZZF4Oo79iDXuL5/0ttZwg2f/5U52iv1cDc" }
+    notes: "The RFC 9106 section 5.3 vector uses the optional secret and associated-data inputs, which golang.org/x/crypto/argon2 does not expose, so the reference-suite vectors are used instead."

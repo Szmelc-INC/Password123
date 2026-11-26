@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Password123: public cryptography lessons, verified test vectors, and age-encrypted challenge solutions decrypted locally in your browser.">
+<title>Password123</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="data:,">
+<script type="module" src="app.js"></script>
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <span class="logo">P123</span>
+    <div>
+      <h1>Password123</h1>
+      <p class="tag">Publish the explanation. Encrypt the answer. Keep the identity.</p>
+    </div>
+  </div>
+  <nav class="links">
+    <a href="https://github.com/Szmelc-INC/Password123" rel="noopener noreferrer">Source</a>
+    <a href="SHA256SUMS">SHA256SUMS</a>
+  </nav>
+</header>
+
+<section class="notice" id="trust">
+  <strong>Trust model.</strong>
+  Decryption runs in this tab with a bundled, pinned age implementation. Your identity is kept in memory only
+  and is never sent anywhere. This page is still code served by a host: for high-assurance use, verify the
+  release and use the CLI (<code>p123 decrypt</code>) on a trusted machine.
+</section>
+
+<main class="layout">
+  <aside class="sidebar">
+    <label class="field">
+      <span>Module</span>
+      <select id="module-filter"><option value="">All modules</option></select>
+    </label>
+    <label class="field">
+      <span>Search</span>
+      <input id="search" type="search" placeholder="aes, signature, kdf..." autocomplete="off" spellcheck="false">
+    </label>
+    <ul id="lesson-list" class="lesson-list" aria-label="Lessons"></ul>
+    <p class="meta" id="build-info"></p>
+  </aside>
+
+  <section class="content">
+    <article id="lesson" class="lesson" aria-live="polite">
+      <p class="muted">Loading the public manifest…</p>
+    </article>
+
+    <section class="vault" aria-labelledby="vault-title">
+      <h2 id="vault-title">Decrypt locally</h2>
+      <p class="muted">Paste an age identity (<code>AGE-SECRET-KEY-1…</code> or <code>AGE-SECRET-KEY-PQ-1…</code>) or load the identity file. It stays in this tab's memory until you lock.</p>
+      <div class="identity-row">
+        <textarea id="identity" rows="2" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="AGE-SECRET-KEY-1..." aria-label="Private age identity"></textarea>
+      </div>
+      <div class="actions">
+        <label class="button secondary file">
+          Load identity file
+          <input id="identity-file" type="file" accept=".txt,.key,text/plain">
+        </label>
+        <button id="use-demo" class="button secondary" type="button">Use demo identity</button>
+        <select id="payload-select" aria-label="Payload to decrypt"></select>
+        <button id="decrypt" class="button primary" type="button">Decrypt</button>
+        <button id="lock" class="button danger" type="button">Lock</button>
+      </div>
+      <p id="vault-status" class="status" role="status"></p>
+      <pre id="plaintext" class="plaintext" hidden></pre>
+    </section>
+  </section>
+</main>
+
+<footer class="foot">
+  <p>MIT licensed. Lessons and vectors are public by design; challenge solutions are age ciphertext.
+  The demo identity is public and opens demo payloads only.</p>
+</footer>
+</body>
+</html>

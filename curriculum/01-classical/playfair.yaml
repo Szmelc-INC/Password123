@@ -1,0 +1,41 @@
+schema_version: 1
+lessons:
+  - id: "01-playfair"
+    title: "Playfair cipher"
+    module: "01-classical"
+    category: "digraph-substitution"
+    difficulty: "beginner"
+    status: "deprecated"
+    summary: "Encrypts pairs of letters with a 5x5 key square. Hides letter frequencies, not digraph frequencies."
+    recommended_for_new_systems: false
+    labels: ["public", "encrypted", "browser-decryptable"]
+    references:
+      - name: "Wikipedia: Playfair cipher"
+        url: "https://en.wikipedia.org/wiki/Playfair_cipher"
+    vectors: ["vectors/classical/playfair.yaml"]
+    guide:
+      what: >-
+        A key phrase fills a 5x5 square (I and J share a cell). Plaintext is split into letter pairs; each pair is replaced using row, column or rectangle rules on the square.
+      problem: >-
+        It was fast to do by hand in the field and resisted naive single-letter frequency analysis.
+      inputs_outputs: >-
+        Input: letters only, upper-cased, J mapped to I, an X inserted between doubled letters in a pair and appended for odd length. Output: an even number of letters.
+      key_management: >-
+        The key phrase is shared in advance. The square has about 25! arrangements, but structure in the rules lets known-plaintext and hill-climbing attacks recover it quickly.
+      common_mistakes:
+        - "Forgetting that decryption output keeps filler X letters that must be removed by reading."
+        - "Mixing rule variants (some texts use Q or shift directions differently)."
+      new_systems: "Never; it is a historical hand cipher."
+      reproduce: |
+        p123 vectors verify --lesson 01-playfair
+    challenge:
+      prompt: The key phrase is public. Build the 5x5 square (J merged into I) and decrypt the ciphertext. Remove filler X letters where they obviously separate doubled letters or pad the end.
+      public_inputs:
+        ciphertext_utf8: ELSFELWIFMCGNSREKDAPFTZOFHKPLW
+        key_phrase: SZMELC LABORATORY
+      submit: the plaintext
+    payload:
+      path: "payloads/01-playfair.age"
+      format: "application/json"
+      sha256: "85c40374929fb06e8ec90a26576a0ac134b84ccf96ddfa6be96d6683aef18a93"
+      label: "browser-decryptable"

@@ -1,0 +1,64 @@
+schema_version: 1
+lesson_id: "04-blake3"
+algorithm: "BLAKE3 (hash mode, 32-byte output)"
+vectors:
+  - id: "official-input-len-0"
+    kind: "official"
+    status: "verified"
+    verifier: "blake3"
+    source:
+      document: "BLAKE3 official test vectors (test_vectors/test_vectors.json)"
+      test_case: "input_len 0, hash mode, first 32 bytes"
+      url: "https://github.com/BLAKE3-team/BLAKE3/blob/master/test_vectors/test_vectors.json"
+    inputs:
+      message: { pattern251: 0 }
+    expected:
+      hash: { hex: "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262" }
+  - id: "official-input-len-1"
+    kind: "official"
+    status: "verified"
+    verifier: "blake3"
+    source:
+      document: "BLAKE3 official test vectors (test_vectors/test_vectors.json)"
+      test_case: "input_len 1, hash mode, first 32 bytes"
+      url: "https://github.com/BLAKE3-team/BLAKE3/blob/master/test_vectors/test_vectors.json"
+    inputs:
+      message: { pattern251: 1 }
+    expected:
+      hash: { hex: "2d3adedff11b61f14c886e35afa036736dcd87a74d27b5c1510225d0f592e213" }
+  - id: "official-input-len-1023"
+    kind: "official"
+    status: "verified"
+    verifier: "blake3"
+    source:
+      document: "BLAKE3 official test vectors (test_vectors/test_vectors.json)"
+      test_case: "input_len 1023, hash mode, first 32 bytes"
+      url: "https://github.com/BLAKE3-team/BLAKE3/blob/master/test_vectors/test_vectors.json"
+    inputs:
+      message: { pattern251: 1023 }
+    expected:
+      hash: { hex: "10108970eeda3eb932baac1428c7a2163b0e924c9a9e25b35bba72b28f70bd11" }
+  - id: "official-input-len-1024"
+    kind: "official"
+    status: "verified"
+    verifier: "blake3"
+    source:
+      document: "BLAKE3 official test vectors (test_vectors/test_vectors.json)"
+      test_case: "input_len 1024, hash mode, first 32 bytes"
+      url: "https://github.com/BLAKE3-team/BLAKE3/blob/master/test_vectors/test_vectors.json"
+    inputs:
+      message: { pattern251: 1024 }
+    expected:
+      hash: { hex: "42214739f095a406f3fc83deb889744ac00df831c10daa55189b5d121c855af7" }
+  - id: "official-input-len-1025"
+    kind: "official"
+    status: "verified"
+    verifier: "blake3"
+    source:
+      document: "BLAKE3 official test vectors (test_vectors/test_vectors.json)"
+      test_case: "input_len 1025, hash mode, first 32 bytes"
+      url: "https://github.com/BLAKE3-team/BLAKE3/blob/master/test_vectors/test_vectors.json"
+    inputs:
+      message: { pattern251: 1025 }
+    expected:
+      hash: { hex: "d00278ae47eb27b34faecf67b4fe263f82d5412916c1ffd97c8cb7fb814b8444" }

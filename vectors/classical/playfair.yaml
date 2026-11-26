@@ -1,0 +1,18 @@
+schema_version: 1
+lesson_id: "01-playfair"
+algorithm: "Playfair cipher"
+vectors:
+  - id: "wikipedia-playfair-example"
+    kind: "adapted"
+    status: "verified"
+    verifier: "playfair"
+    source:
+      document: "Wikipedia, Playfair cipher (key \"playfair example\")"
+      section: "Example"
+      url: "https://en.wikipedia.org/wiki/Playfair_cipher"
+    inputs:
+      plaintext: { utf8: "hide the gold in the tree stump" }
+      key: { utf8: "playfair example" }
+    expected:
+      ciphertext: { utf8: "BMODZBXDNABEKUDMUIXMMOUVIF" }
+    notes: "Rules used: J merged into I, X inserted between doubled letters in a pair, X appended for odd length."

@@ -1,0 +1,47 @@
+schema_version: 1
+lesson_id: "02-aes-256-gcm"
+algorithm: "AES-256-GCM"
+vectors:
+  - id: "gcm-spec-test-case-14"
+    kind: "official"
+    status: "verified"
+    verifier: "aes-gcm"
+    source:
+      document: "McGrew and Viega, The Galois/Counter Mode of Operation (GCM), submitted to NIST"
+      section: "Appendix B, AES Test Vectors"
+      test_case: "Test Case 14"
+      url: "https://csrc.nist.rip/groups/ST/toolkit/BCM/documents/proposedmodes/gcm/gcm-spec.pdf"
+    params:
+      key_bits: { int: 256 }
+      nonce_bytes: { int: 12 }
+      tag_bytes: { int: 16 }
+    inputs:
+      key: { hex: "00000000000000000000000000000000 00000000000000000000000000000000" }
+      nonce: { hex: "000000000000000000000000" }
+      aad: { hex: "" }
+      plaintext: { hex: "00000000000000000000000000000000" }
+    expected:
+      ciphertext: { hex: "cea7403d4d606b6e074ec5d3baf39d18" }
+      tag: { hex: "d0d1c8a799996bf0265b98b5d48ab919" }
+  - id: "gcm-spec-test-case-16"
+    kind: "official"
+    status: "verified"
+    verifier: "aes-gcm"
+    source:
+      document: "McGrew and Viega, The Galois/Counter Mode of Operation (GCM), submitted to NIST"
+      section: "Appendix B, AES Test Vectors"
+      test_case: "Test Case 16"
+      url: "https://csrc.nist.rip/groups/ST/toolkit/BCM/documents/proposedmodes/gcm/gcm-spec.pdf"
+    params:
+      key_bits: { int: 256 }
+      nonce_bytes: { int: 12 }
+      tag_bytes: { int: 16 }
+    inputs:
+      key: { hex: "feffe9928665731c6d6a8f9467308308 feffe9928665731c6d6a8f9467308308" }
+      nonce: { hex: "cafebabefacedbaddecaf888" }
+      aad: { hex: "feedfacedeadbeeffeedfacedeadbeef abaddad2" }
+      plaintext: { hex: "d9313225f88406e5a55909c5aff5269a 86a7a9531534f7da2e4c303d8a318a72 1c3c0c95956809532fcf0e2449a6b525 b16aedf5aa0de657ba637b39" }
+    expected:
+      ciphertext: { hex: "522dc1f099567d07f47f37a32a84427d 643a8cdcbfe5c0c97598a2bd2555d1aa 8cb08e48590dbb3da7b08b1056828838 c5f61e6393ba7a0abcc9f662" }
+      tag: { hex: "76fc6ece0f4e1768cddf8853bb2d551b" }
+    notes: "The verifier also checks that a modified tag, ciphertext, or AAD is rejected."

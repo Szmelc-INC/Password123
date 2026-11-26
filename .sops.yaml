@@ -1,0 +1,8 @@
+# SOPS creation rules. Public recipients only; never put a private identity here.
+# Edit:    SOPS_AGE_KEY_FILE=~/.config/age/password123.txt sops private-cli/maintainer.sops.yaml
+# Rotate:  sops updatekeys private-cli/maintainer.sops.yaml && sops rotate -i private-cli/maintainer.sops.yaml
+creation_rules:
+  - path_regex: '^private-cli/.*\.sops\.yaml$'
+    encrypted_regex: '^(secret_key|answer|private_notes)$'
+    age: >-
+      age1peg634deq4ze9hv6pj9adl4aalph2tmzqx2l4a64ltdmymstn3zs9890pz

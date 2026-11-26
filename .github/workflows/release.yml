@@ -1,0 +1,51 @@
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    name: build, checksum, attest, publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7.1.0
+        with:
+          go-version-file: go.mod
+      - name: test and validate
+        run: |
+          go test -count=1 ./cmd/... ./internal/...
+          go run ./cmd/p123 validate --no-color
+      - name: build binaries and site
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          mkdir -p dist
+          for target in linux/amd64 linux/arm64 darwin/amd64 darwin/arm64 windows/amd64; do
+            os=${target%/*}; arch=${target#*/}; ext=""; [ "$os" = windows ] && ext=.exe
+            CGO_ENABLED=0 GOOS=$os GOARCH=$arch go build -trimpath -ldflags "-s -w -X github.com/Szmelc-INC/Password123/internal/cli.Version=${TAG}" -o "dist/p123_${TAG}_${os}_${arch}${ext}" ./cmd/p123
+          done
+          go run ./cmd/p123 pages build --no-color --dir site
+          tar --sort=name --mtime="@0" --owner=0 --group=0 --numeric-owner -czf "dist/password123-site_${TAG}.tar.gz" -C site .
+          (cd dist && sha256sum * > SHA256SUMS)
+          cat dist/SHA256SUMS
+      - name: attest build provenance (Sigstore-signed)
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: "dist/*"
+      - name: publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: gh release create "$TAG" dist/* --repo "$GITHUB_REPOSITORY" --title "$TAG" --notes "Verify: sha256sum -c SHA256SUMS && gh attestation verify <file> --repo $GITHUB_REPOSITORY"

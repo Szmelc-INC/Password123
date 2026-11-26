@@ -1,0 +1,34 @@
+schema_version: 1
+lesson_id: "02-rc4"
+algorithm: "RC4 keystream"
+vectors:
+  - id: "rfc6229-40bit-offset-0"
+    kind: "official"
+    status: "verified"
+    verifier: "rc4-keystream"
+    source:
+      document: "RFC 6229, Test Vectors for the Stream Cipher RC4"
+      section: "2. Test Vectors"
+      test_case: "Key length 40 bits, key 0x0102030405, offset 0"
+      url: "https://www.rfc-editor.org/rfc/rfc6229"
+    params:
+      offset: { int: 0 }
+    inputs:
+      key: { hex: "0102030405" }
+    expected:
+      keystream: { hex: "b2 39 63 05 f0 3d c0 27 cc c3 52 4a 0a 11 18 a8" }
+  - id: "rfc6229-40bit-offset-256"
+    kind: "official"
+    status: "verified"
+    verifier: "rc4-keystream"
+    source:
+      document: "RFC 6229, Test Vectors for the Stream Cipher RC4"
+      section: "2. Test Vectors"
+      test_case: "Key length 40 bits, key 0x0102030405, offset 256"
+      url: "https://www.rfc-editor.org/rfc/rfc6229"
+    params:
+      offset: { int: 256 }
+    inputs:
+      key: { hex: "0102030405" }
+    expected:
+      keystream: { hex: "1c fc f6 2b 03 ed db 64 1d 77 df cf 7f 8d 8c 93" }

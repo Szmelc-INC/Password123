@@ -1,0 +1,4 @@
+# DEMO-ONLY age identity. PUBLIC BY DESIGN.
+# It decrypts only payloads listed in demo/manifest.yaml, which contain no real answers.
+# Never encrypt real content to its recipient: age1ry8fsd7lygkd2jdl82mk2ggr330x7zuvuf3hk4kwte9x5enfpukqucyptf
+AGE-SECRET-KEY-1A0KSAJPN627FAEXG8M7YKA37DDK89545FKFZ9DYY6896GU47WP8SVQ0AN5

@@ -1,0 +1,48 @@
+schema_version: 1
+lessons:
+  - id: "02-aes-cbc"
+    title: "AES-CBC"
+    module: "02-stream-and-block"
+    category: "block-cipher-mode"
+    difficulty: "intermediate"
+    status: "stable"
+    summary: "Cipher block chaining: confidentiality only. Needs a random IV, padding, and a separate MAC."
+    recommended_for_new_systems: false
+    labels: ["public", "encrypted", "browser-decryptable"]
+    references:
+      - name: "NIST SP 800-38A: Recommendation for Block Cipher Modes of Operation"
+        url: "https://csrc.nist.gov/pubs/sp/800/38/a/final"
+      - name: "Vaudenay, Security Flaws Induced by CBC Padding (EUROCRYPT 2002)"
+        url: "https://www.iacr.org/archive/eurocrypt2002/23320530/cbc02_e02d.pdf"
+    vectors: ["vectors/symmetric/aes-cbc.yaml"]
+    guide:
+      what: >-
+        Each plaintext block is XORed with the previous ciphertext block (the IV for the first block) and then encrypted with AES.
+      problem: >-
+        Unlike ECB, identical plaintext blocks produce different ciphertext blocks, hiding patterns in the data.
+      inputs_outputs: >-
+        Input: a 128/192/256-bit key, a 16-byte unpredictable IV, and plaintext padded to a multiple of 16 bytes (usually PKCS#7). Output: ciphertext of the padded length.
+      key_management: >-
+        Use a random key per purpose and a fresh unpredictable IV per message. Use a separate MAC key and encrypt-then-MAC, or switch to an AEAD mode.
+      common_mistakes:
+        - "No authentication: CBC is malleable, and IV bits flip first-block plaintext bits."
+        - "Revealing padding errors, which creates a padding oracle that decrypts everything."
+        - "Predictable IVs (the BEAST attack against TLS 1.0)."
+        - "MAC-then-encrypt, which still leaks padding validity."
+      new_systems: "Only for legacy compatibility, and then with encrypt-then-MAC. Prefer AES-GCM or ChaCha20-Poly1305."
+      reproduce: |
+        p123 vectors verify --lesson 02-aes-cbc
+        echo -n 6bc1bee22e409f96e93d7e117393172a | xxd -r -p | openssl enc -aes-256-cbc -nopad -K 603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4 -iv 000102030405060708090a0b0c0d0e0f | xxd -p
+    challenge:
+      prompt: A server decrypts AES-256-CBC tokens without any authentication tag. You know the first plaintext block. Produce a new IV so that the first block decrypts to the target, without knowing the key.
+      public_inputs:
+        ciphertext_hex: f740eeb6fbdc39f5d627d0f6f6c43d4d48cdf2cd57eaf102fb66a0b29f13517b
+        iv_hex: b536d726e84f2e0f70903722ca5cba02
+        known_first_block_utf8: role=student;uid
+        target_first_block_utf8: role=admin;;;uid
+      submit: the forged IV in hex
+    payload:
+      path: "payloads/02-aes-cbc.age"
+      format: "application/json"
+      sha256: "cf4887e022328ae909ae729ffa28c34b35bf026af4fd73f141c7273cb90bb2c8"
+      label: "browser-decryptable"

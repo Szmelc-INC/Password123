@@ -1,0 +1,49 @@
+schema_version: 1
+lessons:
+  - id: "04-pbkdf2"
+    title: "PBKDF2"
+    module: "04-hashes-and-kdfs"
+    category: "password-kdf"
+    difficulty: "intermediate"
+    status: "stable"
+    summary: "Iterated HMAC to slow password guessing. Costs time, not memory."
+    recommended_for_new_systems: false
+    labels: ["public", "encrypted", "browser-decryptable"]
+    references:
+      - name: "RFC 8018: PKCS #5 v2.1"
+        url: "https://www.rfc-editor.org/rfc/rfc8018"
+      - name: "RFC 7914 section 11: PBKDF2-HMAC-SHA-256 test vectors"
+        url: "https://www.rfc-editor.org/rfc/rfc7914"
+      - name: "OWASP Password Storage Cheat Sheet"
+        url: "https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html"
+    vectors: ["vectors/hashes-kdfs/pbkdf2.yaml"]
+    guide:
+      what: >-
+        PBKDF2 repeats a pseudo-random function (usually HMAC-SHA-256) c times over the password and salt and XORs the results, producing a key of the requested length.
+      problem: >-
+        It makes each password guess cost c HMAC calls, so offline attacks against stolen hashes or public ciphertext are slower.
+      inputs_outputs: >-
+        Input: password bytes, a unique random salt (at least 16 bytes), iteration count, output length. Output: derived key bytes.
+      key_management: >-
+        Store the salt and iteration count with the hash. Raise the count over time (OWASP currently suggests 600,000 iterations for PBKDF2-HMAC-SHA-256). WebCrypto supports PBKDF2 natively, which is why browser tools such as StatiCrypt use it.
+      common_mistakes:
+        - "Low iteration counts, or a fixed salt shared by all users."
+        - "Believing a KDF fixes weak passwords; it only multiplies the guessing cost."
+        - "Asking for more output than the hash length, which multiplies the defender's cost but not the attacker's."
+      new_systems: "Prefer Argon2id. Use PBKDF2 where FIPS validation or WebCrypto-only environments require it."
+      reproduce: |
+        p123 vectors verify --lesson 04-pbkdf2
+    challenge:
+      prompt: A device stored PBKDF2-HMAC-SHA-256(PIN, salt) for a 4-digit PIN. Recover the PIN by offline guessing and time how long it takes.
+      public_inputs:
+        derived_key_hex: e9cbd6254b76f398304b8a18e5529466ffdf97d2c571c5249b72ad6d8aa43026
+        dk_len: 32
+        iterations: 10000
+        password_space: 0000-9999
+        salt_hex: fc8dd0c536da1d2afa694ac8a7a30301
+      submit: the PIN
+    payload:
+      path: "payloads/04-pbkdf2.age"
+      format: "application/json"
+      sha256: "f6f9751ff68ee7d079a6dfcec0dc1ffbaee22f973802e7d9c2949b996505b27f"
+      label: "browser-decryptable"

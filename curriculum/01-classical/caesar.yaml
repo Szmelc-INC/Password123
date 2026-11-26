@@ -1,0 +1,44 @@
+schema_version: 1
+lessons:
+  - id: "01-caesar"
+    title: "Caesar cipher"
+    module: "01-classical"
+    category: "substitution"
+    difficulty: "beginner"
+    status: "deprecated"
+    summary: "Shift every letter by a fixed amount. Twenty-five keys, broken by trying them all."
+    recommended_for_new_systems: false
+    labels: ["public", "encrypted", "browser-decryptable"]
+    references:
+      - name: "Wikipedia: Caesar cipher"
+        url: "https://en.wikipedia.org/wiki/Caesar_cipher"
+      - name: "Simon Singh, The Code Book, chapter 1"
+        url: "https://simonsingh.net/books/the-code-book/"
+    vectors: ["vectors/classical/caesar.yaml"]
+    guide:
+      what: >-
+        Each letter is replaced by the letter a fixed number of positions later in the alphabet, wrapping from Z back to A. The shift is the key.
+      problem: >-
+        Historically it hid messages from readers who did not know the trick. Today it only teaches the vocabulary of keys, plaintext, ciphertext and key space.
+      inputs_outputs: >-
+        Input: text and a shift from 1 to 25. Output: text of the same length. Non-letters pass through unchanged, which already leaks word boundaries and punctuation.
+      key_management: >-
+        The key is a single number shared in advance. There are only 25 useful keys, so key secrecy provides no real protection.
+      common_mistakes:
+        - "Believing that hiding the algorithm adds security (Kerckhoffs's principle says it must not)."
+        - "Applying the cipher twice: two shifts are just another shift."
+        - "Keeping spaces and punctuation, which reveals word lengths."
+      new_systems: "Never. Use an authenticated cipher such as AES-256-GCM or ChaCha20-Poly1305."
+      reproduce: |
+        p123 vectors verify --lesson 01-caesar
+        echo 'QEB NRFZH YOLTK' | tr 'A-Z' 'D-ZA-C'
+    challenge:
+      prompt: Recover the plaintext and the shift. Only ASCII letters were shifted; case, spaces and punctuation are unchanged.
+      public_inputs:
+        ciphertext_utf8: Mywolcns nblioab ivmwolcns fumnm yruwnfs ohncf migyihy wiohnm nby fynnylm.
+      submit: the right shift (1-25) and the plaintext
+    payload:
+      path: "payloads/01-caesar.age"
+      format: "application/json"
+      sha256: "e16efe269cee16a2f7fe184bc0d3c67241eb3abf385246a171f27c826ed0cdce"
+      label: "browser-decryptable"

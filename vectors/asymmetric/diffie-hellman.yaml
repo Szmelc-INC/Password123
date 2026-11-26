@@ -1,0 +1,18 @@
+schema_version: 1
+lesson_id: "03-diffie-hellman"
+algorithm: "Finite-field Diffie-Hellman, 2048-bit MODP group 14"
+vectors:
+  - id: "rfc3526-group14-parameters"
+    kind: "parameter"
+    status: "verified"
+    verifier: "modp-safe-prime"
+    source:
+      document: "RFC 3526, More Modular Exponential (MODP) Diffie-Hellman groups for IKE"
+      section: "3. 2048-bit MODP Group"
+      url: "https://www.rfc-editor.org/rfc/rfc3526"
+    params:
+      bits: { int: 2048 }
+    inputs:
+      prime: { hex: "ffffffffffffffffc90fdaa22168c234c4c6628b80dc1cd129024e088a67cc74020bbea63b139b22514a08798e3404ddef9519b3cd3a431b302b0a6df25f14374fe1356d6d51c245e485b576625e7ec6f44c42e9a637ed6b0bff5cb6f406b7edee386bfb5a899fa5ae9f24117c4b1fe649286651ece45b3dc2007cb8a163bf0598da48361c55d39a69163fa8fd24cf5f83655d23dca3ad961c62f356208552bb9ed529077096966d670c354e4abc9804f1746c08ca18217c32905e462e36ce3be39e772c180e86039b2783a2ec07a28fb5c55df06f4c52c9de2bcbf6955817183995497cea956ae515d2261898fa051015728e5a8aacaa68ffffffffffffffff" }
+      generator: { int: 2 }
+    notes: "Checks the published constant: p is a 2048-bit safe prime and g = 2 generates the subgroup of prime order (p-1)/2. This is a parameter check, not an exchange vector."
