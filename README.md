@@ -22,7 +22,7 @@ GitHub cannot make one folder of a public repository private. Password123 separa
 | Layer | Where | Who can read it |
 |---|---|---|
 | 22 lessons in 6 modules (classical → post-quantum) | `curriculum/` | everyone |
-| 34 test vectors from RFCs, NIST, reference suites and C2SP CCTV, recomputed in CI | `vectors/` | everyone |
+| 34 vectors and checks (28 published vectors from RFCs, NIST, reference suites and C2SP CCTV; 3 adapted textbook examples; 1 parameter check; 2 property self-checks), all recomputed in CI | `vectors/` | everyone |
 | 19 challenge solutions + 1 demo payload | `payloads/*.age` | enrolled recipients (demo: everyone) |
 | Maintainer notes with visible keys and encrypted values | `private-cli/*.sops.yaml` | enrolled recipients, via SOPS |
 | Static reader with in-browser age decryption | `docs/` → GitHub Pages | everyone; decryption needs your identity |

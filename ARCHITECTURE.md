@@ -1270,7 +1270,7 @@ Status as of the first release. Checked items are implemented and covered by CI.
 - [x] Add schemas for public manifests and encrypted payload content.
 - [x] Add `.gitignore`, `.gitattributes`, `.sops.yaml`, and Gitleaks configuration.
 - [x] Generate maintainer age identities outside the repository.
-- [x] Add a small set of public, sourced test vectors (34 vectors, all recomputed in CI).
+- [x] Add a small set of public, sourced test vectors (28 published vectors plus adapted, parameter and property checks, all recomputed in CI).
 - [x] Add CLI encrypt/decrypt instructions.
 - [x] Add CI schema, hash, vector, and secret-scanning checks.
 
