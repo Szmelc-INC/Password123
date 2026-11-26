@@ -15,7 +15,7 @@
           inherit version;
           src = self;
           subPackages = [ "cmd/p123" ];
-          vendorHash = pkgs.lib.fakeHash;
+          vendorHash = "sha256-z7s1i+Q2Romp6r4qTpW1Ap9ISom7KLhoiGgpf4h8wWg=";
           env.CGO_ENABLED = "0";
           ldflags = [ "-s" "-w" "-X github.com/Szmelc-INC/Password123/internal/cli.Version=v${version}" ];
           nativeBuildInputs = [ pkgs.installShellFiles ];
