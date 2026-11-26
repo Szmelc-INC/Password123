@@ -497,8 +497,13 @@ func plaintextSOPSValues(v any, rule *regexp.Regexp, prefix string) []string {
 var skipDirs = map[string]bool{".git": true, "node_modules": true}
 
 func (r *run) checkPrivateMaterial(extra []string) {
+	// The demo identity is allowed only at exactly demo/demo-identity.txt
+	// relative to the scanned directory (the repository or a built site).
 	scan := func(base string, isRepo bool) int {
 		hits := 0
+		if abs, err := filepath.Abs(base); err == nil {
+			base = abs
+		}
 		filepath.WalkDir(base, func(p string, d fs.DirEntry, err error) error {
 			if err != nil {
 				return nil
@@ -509,8 +514,15 @@ func (r *run) checkPrivateMaterial(extra []string) {
 				}
 				return nil
 			}
-			rel, _ := filepath.Rel(r.root, p)
-			rel = filepath.ToSlash(rel)
+			relBase, err := filepath.Rel(base, p)
+			if err != nil {
+				relBase = p
+			}
+			relBase = filepath.ToSlash(relBase)
+			rel := relBase
+			if !isRepo {
+				rel = filepath.ToSlash(p)
+			}
 			if strings.HasSuffix(p, ".age") {
 				return nil
 			}
@@ -518,7 +530,7 @@ func (r *run) checkPrivateMaterial(extra []string) {
 			if err != nil || len(b) > 32<<20 {
 				return nil
 			}
-			allowed := rel == DemoIdentityPath || strings.HasSuffix(rel, "/"+DemoIdentityPath)
+			allowed := relBase == DemoIdentityPath
 			for _, pat := range vault.PrivatePatterns {
 				if pat.Match(b) && !allowed {
 					r.add("secrets", Error, rel, "contains private key material matching %s", pat.String())
