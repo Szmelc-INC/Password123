@@ -1,0 +1,20 @@
+name: Maintainer settings
+public_description: Maintainer-only notes for Password123 challenges. Field names are public; selected values are SOPS-encrypted.
+generated: "2026-11-26"
+answer: ENC[AES256_GCM,data:H1lncD7XBKRsJoRlh1w8e6oVvlZHIfdCG+RZb2pyZz5YvcEN55jkZoYCWyJsqfe/Wiiqq36rgDLrcnit75Ewlbfi6XldAcP+doCt4z8YFgZYMBOQb3WjAlt+pG4mgFHT0V6GwxxsF//NnMIsPLJ2Af4Te5Ob62t7Tue3yPMn/JS9op7enWF9OhemeBmSeYBf9EsJNMczPJcNEzEFlPH47jVUlGc6YyRBXpnz4RH/pmjQeLamsfaKRJXwCbaWWxXNm7h8x0yFjAvWT5c0WwSEgD+FHsIWHCAf5hn0aHGpPwhhNz36yfpnNfvfFBJUy3YTKBE060A0dhv1Gh+XCgvWADmXl94dbmX5DR52ySKwBO3Mv27umeK1ify9yBV5hdvYc5wfT2pqc5zG88FhGH79YR2kt3bqzr/uhqoYNDfkpX5LLLJz9f/LKiK2cxb4doMmZv5JtdRrwhpd5pD2EsETRWeObUAcuwyzkpCiRtuxRDwKFREx+NwcAkMOdPmW+pzcG0qRiAGmg1y274fLomRUCQPaGbUwMRSpEqG7NOA4VgYz5vuyo4XFkHuwtorNiI2TTylrfi2bK8GreFbYu2mHuMRlL0Me3DWK8/TJ2tpR09dQbLujGennX3H6Sz3hRwlp5wLjaJ4IIyy7IhBEhv/7a47/b0/GfUUvJqnreBJeW1oFv798vFChY9xoFNBxBb+ayUevTzM4mnCHSb89bJZnltO5H5Lsfd6d91bvX75QCtr1EIqFcBO5ntHaBMXpDSOFLfRJxEefrCUNEhIQ6/PfbQasPQ0atRXKODwc3b95DuvdOBdNezSR/E/a8YalG0pLAy9t4aZrchC+wSLsvHEzfF/zDCf/LHakiXGo8A8F+XPa5KR0RB3tkUbtgI6X+5Ed1A3fEZw2tA1/4cVGGQTSxnBkt1c9wbxoJ/DlcyLC+szHW/kOIaJs8vtYiR5ME9WRjHyXOIYnhOhE60u1HmAmVil9DqhiiLhs1xbMQ5JyDuO3hrm72nhfx9Ezhlc7ka2OnYr/2dOwohT0RIZONmrc2yknQLTHO1YdMyXyhttZyErZCqsD+13uIx6a7MhCMDs5V3YdS5RzHLFguT+g2WWCKKvIg7C0nKGhqyXw5kmJtwiqRcgJgdWN4Fsyo0fZ7uqgBEG9R1dQl86WabvXr1sqYWALGFMuhYUxwjJBV3C81kpzPg5v9tznbpTwO4GntPASB/O8ztcSiJDjfGHObaHoZXz6h7aK0y5o5Dk9iNKozEhx,iv:WdOe+8R4L2EPpOPv23q+aKAQ8SByTfe6KErtO0Lgvyg=,tag:HjyOqoLI3FLF2q9M2/LtGQ==,type:str]
+private_notes: ENC[AES256_GCM,data:7FgxO2bDQAS/MVRG2dXG0WqH0OTqQQMpfQASwOD64g48i1a98SGNcyJKWBSUBqbw69KnL8XHPLvD7acxRF62hP7mPqAda8Suu20sHpdlI0xPw98SHIc5SYnJMiByhNNz3qrZUN/gL+46S54aKAuBiWZ4q3ztf3D66mbUaR4pyVf2NCcqD227ZzEaHAe2+dhKZyS1SN+tTVXVjRMNlvXXvFPuoER+q48d//1MVL//wfDtBPTaGZQUt6hbB2SzjE0/3ziJfj0I3JYloKj2gGOa3iDZ0WtpFjGqpPnMbWoTF4hnccpb7UhH5Apod+ogXAmxrM3iczidU9ngipxri06UBXF7BHCzKrX6G23wD4LoO14/KwraNdQSbhs77kqbyuYB7yIRTpcfYEAfPHMiKPlUYRJrwR+a8LN+q8LmzEetu0Pcz0CtqvdadC/YQg==,iv:trSaKE6iM8uW8sVEnWeUNsmAPo49keD8kAeEJSQaJcY=,tag:2H28xiGi03Auvsk0hRv4Zw==,type:str]
+sops:
+    age:
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSAwZThFUElYeThLVE5FMGpt
+            NFJjRHJ3N0FQL1FVSVJQVCtZZmNLT0NnN2tRCmxBSnkzM0JCdGh1WnhKdGNOcVpl
+            OEFuZHJtNTFUYkJ2WEhhbnA0WXpEbFkKLS0tIEo4d0hxWGVBUlJncWRUb09wR25T
+            MVlINDllazVuS3NqOThQbG9YaWdCYkEK9cvep1Z7+VAVyIT8XGZmPLfbvV60jzy0
+            js3jeTIIlS8iUUl6Z6C9rXPHa0vc1T71lEJ8Uo6aADSKy9PRSrXmXA==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age1peg634deq4ze9hv6pj9adl4aalph2tmzqx2l4a64ltdmymstn3zs9890pz
+    encrypted_regex: ^(secret_key|answer|private_notes)$
+    lastmodified: "2026-11-26T10:58:45Z"
+    mac: ENC[AES256_GCM,data:8gTYgRj1PfRnpwhe6kjOGITDprHlXEN+9cgDSt0wBPLMNlXFrsE5SLRy7jFBzoudFo+53RYuVDXht3xk7SEn23LFfPuBD8/7wvzYtafEubKCB/CkFrbQpf5ekuUd0rYELIJK8RRNUy5t4Ff2Ln6gn9/V+xLVKrZeKirtkufnClI=,iv:ijrcfILimtJHuWXppJAX40CNIdyKWCqBwkxvQHcGKyE=,tag:1RC4ztFhPpiWJJWMuGsGNw==,type:str]
+    version: 3.13.3

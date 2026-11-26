@@ -1,0 +1,51 @@
+schema_version: 1
+lessons:
+  - id: "02-aes-256-gcm"
+    title: "AES-256-GCM"
+    module: "02-stream-and-block"
+    category: "symmetric-aead"
+    difficulty: "intermediate"
+    status: "stable"
+    summary: "Authenticated encryption with associated data. Safe only while (key, nonce) pairs never repeat."
+    recommended_for_new_systems: true
+    labels: ["public", "encrypted", "browser-decryptable"]
+    references:
+      - name: "NIST SP 800-38D: Galois/Counter Mode (GCM) and GMAC"
+        url: "https://csrc.nist.gov/pubs/sp/800/38/d/final"
+      - name: "McGrew and Viega, The Galois/Counter Mode of Operation (test vectors)"
+        url: "https://csrc.nist.rip/groups/ST/toolkit/BCM/documents/proposedmodes/gcm/gcm-spec.pdf"
+      - name: "Joux, Authentication Failures in NIST version of GCM (forbidden attack)"
+        url: "https://csrc.nist.gov/csrc/media/projects/block-cipher-techniques/documents/bcm/joux_comments.pdf"
+    vectors: ["vectors/symmetric/aes-256-gcm.yaml"]
+    guide:
+      what: >-
+        GCM encrypts with AES in counter mode and authenticates the ciphertext plus associated data (AAD) with the GHASH polynomial MAC, producing a 16-byte tag.
+      problem: >-
+        It gives confidentiality and integrity in one primitive, and it is fast where AES hardware instructions exist.
+      inputs_outputs: >-
+        Input: a 256-bit key, a 96-bit nonce, plaintext, and optional AAD. Output: ciphertext of the same length plus a 128-bit tag. Decryption returns an error, not plaintext, if anything was modified.
+      key_management: >-
+        Generate keys randomly. Never repeat a nonce under one key: use a counter or random 96-bit nonces with a bounded message count (NIST limits random nonces to 2^32 messages per key). Rotate keys before the limits.
+      common_mistakes:
+        - "Nonce reuse: it reveals the XOR of plaintexts and lets an attacker recover the GHASH key and forge tags."
+        - "Releasing plaintext before the tag is checked (streaming decryption)."
+        - "Truncating tags below 128 bits."
+        - "Putting secrets in AAD; AAD is authenticated, not encrypted."
+      new_systems: "Yes, with a nonce strategy you can prove never repeats. Consider AES-GCM-SIV or XChaCha20-Poly1305 when nonces are hard to manage."
+      reproduce: |
+        p123 vectors verify --lesson 02-aes-256-gcm
+    challenge:
+      prompt: Two messages were sealed with AES-256-GCM under the same key AND the same nonce. Each ciphertext ends with a 16-byte tag. The first plaintext is known. Recover the second plaintext.
+      public_inputs:
+        aad_utf8: lesson=02-aes-256-gcm
+        known_plaintext_1_utf8: The nonce must never repeat under one key. This message is public.
+        nonce_hex: 320a972deeaeb8fdaa7bfdf2
+        sealed_1_hex: 680ec20d5545710f476f396e5712da87eb2116c18107dd27005aefd16589e4f91692ef2dae2937a5d1c968be31506203d185526b7b535bbbd62ee31b951bd21ba56873b11734723869447f33ad3ea735d7cd
+        sealed_2_hex: 7209c94e5e0a6d09573c313b48039b82fd7707dbc455e018371bf4973097ecfd0ddcf426b37d2fe0c9892cca2d517403fba8604b521455fec673cd55c9dc3f63608137f480a7184f9c8a
+        tag_bytes: 16
+      submit: the second plaintext
+    payload:
+      path: "payloads/02-aes-256-gcm.age"
+      format: "application/json"
+      sha256: "a6daf8149ef668fb2e94a7c2df191e8015a4de1d3b2c35366472e203d5e37ef7"
+      label: "browser-decryptable"

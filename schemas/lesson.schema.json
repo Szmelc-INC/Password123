@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://szmelc-inc.github.io/Password123/schemas/lesson.schema.json",
+  "title": "Password123 public lesson manifest",
+  "description": "Public, intentionally readable lesson metadata. Never put private answers here.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "lessons"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "lessons": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/lesson" }
+    }
+  },
+  "$defs": {
+    "nonEmpty": { "type": "string", "minLength": 1 },
+    "lesson": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "module", "category", "difficulty", "status", "summary", "recommended_for_new_systems", "labels", "references", "vectors", "guide"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^0[1-6]-[a-z0-9]+(-[a-z0-9]+)*$" },
+        "title": { "$ref": "#/$defs/nonEmpty" },
+        "module": { "enum": ["01-classical", "02-stream-and-block", "03-asymmetric-and-kex", "04-hashes-and-kdfs", "05-multiparty-and-hardware", "06-post-quantum"] },
+        "category": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+        "difficulty": { "enum": ["beginner", "intermediate", "advanced"] },
+        "status": { "enum": ["draft", "experimental", "stable", "deprecated"] },
+        "summary": { "$ref": "#/$defs/nonEmpty" },
+        "recommended_for_new_systems": { "type": "boolean" },
+        "labels": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "enum": ["public", "encrypted", "private-cli", "browser-decryptable", "demo-only"] }
+        },
+        "references": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "url"],
+            "properties": {
+              "name": { "$ref": "#/$defs/nonEmpty" },
+              "url": { "type": "string", "pattern": "^https://" }
+            }
+          }
+        },
+        "vectors": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^vectors/[a-z0-9-]+/[a-z0-9-]+\\.yaml$" }
+        },
+        "guide": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["what", "problem", "inputs_outputs", "key_management", "common_mistakes", "new_systems", "reproduce"],
+          "properties": {
+            "what": { "$ref": "#/$defs/nonEmpty" },
+            "problem": { "$ref": "#/$defs/nonEmpty" },
+            "inputs_outputs": { "$ref": "#/$defs/nonEmpty" },
+            "key_management": { "$ref": "#/$defs/nonEmpty" },
+            "common_mistakes": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/nonEmpty" } },
+            "new_systems": { "$ref": "#/$defs/nonEmpty" },
+            "reproduce": { "$ref": "#/$defs/nonEmpty" }
+          }
+        },
+        "challenge": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["prompt", "public_inputs"],
+          "properties": {
+            "prompt": { "$ref": "#/$defs/nonEmpty" },
+            "public_inputs": { "type": "object" },
+            "submit": { "type": "string" }
+          }
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["path", "format", "sha256", "label"],
+          "properties": {
+            "path": { "type": "string", "pattern": "^payloads/[a-z0-9-]+\\.age$" },
+            "format": { "enum": ["application/json", "text/plain", "text/markdown"] },
+            "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+            "label": { "enum": ["browser-decryptable", "private-cli"] }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,28 @@
+schema_version: 1
+lesson_id: "04-sha-256"
+algorithm: "SHA-256"
+vectors:
+  - id: "nist-example-one-block"
+    kind: "official"
+    status: "verified"
+    verifier: "sha-256"
+    source:
+      document: "NIST Cryptographic Standards and Guidelines, Examples with Intermediate Values: SHA-256 (FIPS 180-4)"
+      test_case: "One-block message \"abc\""
+      url: "https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Standards-and-Guidelines/documents/examples/SHA256.pdf"
+    inputs:
+      message: { utf8: "abc" }
+    expected:
+      digest: { hex: "BA7816BF 8F01CFEA 414140DE 5DAE2223 B00361A3 96177A9C B410FF61 F20015AD" }
+  - id: "nist-example-two-block"
+    kind: "official"
+    status: "verified"
+    verifier: "sha-256"
+    source:
+      document: "NIST Cryptographic Standards and Guidelines, Examples with Intermediate Values: SHA-256 (FIPS 180-4)"
+      test_case: "Two-block message (448 bits)"
+      url: "https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Standards-and-Guidelines/documents/examples/SHA256.pdf"
+    inputs:
+      message: { utf8: "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq" }
+    expected:
+      digest: { hex: "248D6A61 D20638B8 E5C02693 0C3E6039 A33CE459 64FF2167 F6ECEDD4 19DB06C1" }

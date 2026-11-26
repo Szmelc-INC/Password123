@@ -1,0 +1,4 @@
+# Password123 enrolled recipients (PUBLIC keys only).
+# One age recipient per line, optional trailing "# owner/device, enrolled YYYY-MM-DD".
+# Enrollment and removal: see CONTRIBUTING.md. After any change run: p123 rotate --all
+age1peg634deq4ze9hv6pj9adl4aalph2tmzqx2l4a64ltdmymstn3zs9890pz # maintainer workstation, enrolled 2026-11-26

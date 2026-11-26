@@ -1,0 +1,48 @@
+schema_version: 1
+lessons:
+  - id: "06-ml-kem-768"
+    title: "ML-KEM-768"
+    module: "06-post-quantum"
+    category: "key-encapsulation"
+    difficulty: "advanced"
+    status: "stable"
+    summary: "Module-lattice key encapsulation (NIST FIPS 203). A KEM, not a bulk cipher."
+    recommended_for_new_systems: true
+    labels: ["public", "encrypted", "browser-decryptable"]
+    references:
+      - name: "NIST FIPS 203: Module-Lattice-Based Key-Encapsulation Mechanism Standard"
+        url: "https://csrc.nist.gov/pubs/fips/203/final"
+      - name: "C2SP CCTV: ML-KEM test vectors"
+        url: "https://c2sp.org/CCTV/ML-KEM"
+    vectors: ["vectors/post-quantum/ml-kem-768.yaml"]
+    guide:
+      what: >-
+        The receiver publishes an encapsulation key. The sender runs Encapsulate to get a random 32-byte shared key and a ciphertext; the receiver runs Decapsulate on the ciphertext to get the same key. Invalid ciphertexts give a pseudo-random key (implicit rejection).
+      problem: >-
+        Key establishment that is believed to resist quantum computers, defending against "harvest now, decrypt later" collection of today's traffic.
+      inputs_outputs: >-
+        ML-KEM-768: 1184-byte encapsulation key, 1088-byte ciphertext, 32-byte shared key. A 64-byte seed (d || z) determines the decapsulation key. Formerly known as Kyber.
+      key_management: >-
+        Use fresh key pairs for ephemeral exchanges. Feed the shared key into an AEAD (KEM-DEM). Deploy as a hybrid with X25519 during migration.
+      common_mistakes:
+        - "Calling ML-KEM an encryption algorithm for data; it only transports a key."
+        - "Dropping the classical component too early; hybrids protect against new lattice attacks."
+        - "Underestimating sizes: keys and ciphertexts are about 35 times larger than X25519."
+      new_systems: "Yes, in a hybrid with X25519 (for example X25519MLKEM768 in TLS, age1pq recipients)."
+      reproduce: |
+        p123 vectors verify --lesson 06-ml-kem-768
+    challenge:
+      prompt: The ML-KEM-768 decapsulation key seed below is challenge-only and public. Decapsulate the KEM ciphertext to get a 32-byte shared key, then open the AES-256-GCM message (12 zero-byte nonce, AAD "ml-kem-768 challenge").
+      public_inputs:
+        aad_utf8: ml-kem-768 challenge
+        aead: AES-256-GCM
+        decapsulation_seed_hex: 5e28012dff09000aa00beef1667a6a8ced06c6ac2ff4f4c8e5abe42cc3f72a6ca18710a27acab41b0f14cac3a16737960e51f9f87432c929ee2af181f6e6f1c8
+        kem_ciphertext_hex: 0d44ad7fc0c2a5425f12ed01efcf02f61ff0fcc8603229643c6d63fe5c382f0f905cd1b782daead7427cf27143f766e50801cfe2fec2071cbc0b59761f33bd98b03c07e251d2f188e2c4cd5d8573c1ca32b0d4091e87bc7c4f09f11894684dfbb746d3d014ba8a338a20aac5e034352c0a60ead9d857e1efd04979eaaeefe72e9188eb18fe61a89013a5daf3efbcf5bb593bddbdd8c666ed96cb4bd33f497183ba6251f609e7d14e2300c30431bbf467849a8c35cdb47f40f0710260499a839205ff3df75fb6443ebaae5df57c78853c17cf22404922c2db8ba0840f5d00ee20044e0239c9700567c9c0fc43c1421ee8a359bd507013b62ecb589731531c75ef5b66cbf8a064543d07889538b56fa8b38f212c718a078f5d806c1f8b5a8c96557c3572035e2d5381b4fd0008b6129bf9ecdb41e8f79a2eb10a0d7a6e134f6d457bbb6efd3e318435515b42a61a88e20571e90fbdd1b94e6f3cea9bbf31fc8e5d251a76d6975e0948a9446286119a47bbd4a1a8a192ace29d220364c953e373182bd6a2fd41f57c8599595baeb564c75e2c7d60c18e25b3f65a22ef3559c0b230a1fabd8a7b51b8f2c54a1dc87a39b88d974e7db976e1e494c9380a27a66ca4c59df681d42559f9d09dadf7d3e8e0737afefcf866c2c5525c3ed8505e32acbaaa95253f7426e5eca1781f066050077095f57478c5fcd9e87829be831946f23632a74da3f2343e6d60dd8c86ec3c81cdf8535712e603349c81354d2107d9e6d8744edae7bbfb5fbdf84a2570fbeabef75732013934edfc358d9f1b6d1c6ba2c6d88d0405141a4176ab7f54cd1bb31bddf7d6d3e558702086a3fc401a531a53d6056f29214c2fafa36decd8d5740db1f4f54fbb2633e9856fd2701de01f02ac2b4f4ed1d0f3ce7594d87410d3d24ac22f6ae653ac3b2e72ca6fa21f9a75a82d2f8478c2526ac843b9ef42d4b524f002d0af1aa0bf629a761ee152e42d39277a70b41b33f0a1c2146c5859bd50b15605ed6cb0c892b01375911b733bb2b23cba99fe971893363e4b31922a09e1458b8e729669954311aa6aeb513ffc7dfeb6fca21888277898e980b55154c34242f4b03948476e5fd7151fa1f83b57d5d559c19b184146d8bf717b0d9c3758832d02eea0ca9af8accca1e634452f93f73b8dca5b41caf69054c8d48de3b6211d8f874101ee593073dff2f205434c0f7af0f27435d9a18d96202d0a19f93476eef2dde0c07b5e8ed3361c433337163bffa014eee1a6c3bb3497ddf2fd3609945371b3fffe194d5ef5534195038db5cb4d25e26b80e2076f960401f064749535313159d07ef51d607a2e89be34c678c1c641f117e3171dee972cc13a011c329eda72ad8141882f75136ff6bc7dd5c9a5ba14839bf35cbd5eb938f3b0271d8d948aa7079c997fa0a1d90155d2c40b8105327269c0462a3adcf10cc561fda97189f2e568f7af32d6d3205236cb33d348301480a573625f286dfb98d722ab1b6827d4f1283467e39e5d752306211424da455fcb4486a669
+        nonce_hex: "000000000000000000000000"
+        sealed_hex: a6ad38a28c96ec7a5c3223935330c733aee45f30b33f67cc7a4c11a25aa00a74ae91e640fc52e1be326f878afe75e45a74ac79064e569317642e4dabc739d99e0b7723
+      submit: the shared key and the plaintext
+    payload:
+      path: "payloads/06-ml-kem-768.age"
+      format: "application/json"
+      sha256: "168fa9fdeba742c013a93de3293e867dbe1acd2678e1486e5911ad028b75db8a"
+      label: "browser-decryptable"

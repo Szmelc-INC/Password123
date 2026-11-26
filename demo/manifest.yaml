@@ -1,0 +1,11 @@
+schema_version: 1
+identity: "demo/demo-identity.txt"
+recipient: "age1ry8fsd7lygkd2jdl82mk2ggr330x7zuvuf3hk4kwte9x5enfpukqucyptf"
+payloads:
+  - id: "demo-welcome"
+    title: "Welcome to Password123 (demo payload)"
+    path: "payloads/demo-welcome.age"
+    format: "application/json"
+    sha256: "d102c3d4af4904d94c8b79ea41721ccbe0882137c94236484add8b7484c63518"
+    plaintext_sha256: "2aabf25e547f30c10d8aa98b32fc34e2b4ace1e200cd9610917137541e5b9575"
+    label: "demo-only"

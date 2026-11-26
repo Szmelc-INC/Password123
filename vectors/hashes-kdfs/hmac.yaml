@@ -1,0 +1,30 @@
+schema_version: 1
+lesson_id: "04-hmac"
+algorithm: "HMAC-SHA-256"
+vectors:
+  - id: "rfc4231-test-case-1"
+    kind: "official"
+    status: "verified"
+    verifier: "hmac-sha-256"
+    source:
+      document: "RFC 4231, Identifiers and Test Vectors for HMAC-SHA-224, HMAC-SHA-256, HMAC-SHA-384, and HMAC-SHA-512"
+      section: "4.2. Test Case 1"
+      url: "https://www.rfc-editor.org/rfc/rfc4231"
+    inputs:
+      key: { hex: "0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b 0b0b0b0b" }
+      data: { utf8: "Hi There" }
+    expected:
+      mac: { hex: "b0344c61d8db38535ca8afceaf0bf12b 881dc200c9833da726e9376c2e32cff7" }
+  - id: "rfc4231-test-case-2"
+    kind: "official"
+    status: "verified"
+    verifier: "hmac-sha-256"
+    source:
+      document: "RFC 4231, Identifiers and Test Vectors for HMAC-SHA-224, HMAC-SHA-256, HMAC-SHA-384, and HMAC-SHA-512"
+      section: "4.3. Test Case 2"
+      url: "https://www.rfc-editor.org/rfc/rfc4231"
+    inputs:
+      key: { utf8: "Jefe" }
+      data: { utf8: "what do ya want for nothing?" }
+    expected:
+      mac: { hex: "5bdcc146bf60754e6a042426089575c7 5a003f089d2739839dec58b964ec3843" }

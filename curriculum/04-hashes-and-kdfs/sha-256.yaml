@@ -1,0 +1,66 @@
+schema_version: 1
+lessons:
+  - id: "04-sha-256"
+    title: "SHA-256"
+    module: "04-hashes-and-kdfs"
+    category: "hash-function"
+    difficulty: "beginner"
+    status: "stable"
+    summary: "A 256-bit cryptographic hash. Hashing is not encryption and not password storage."
+    recommended_for_new_systems: true
+    labels: ["public", "encrypted", "browser-decryptable"]
+    references:
+      - name: "NIST FIPS 180-4: Secure Hash Standard"
+        url: "https://csrc.nist.gov/pubs/fips/180-4/upd1/final"
+      - name: "NIST examples with intermediate values: SHA-256"
+        url: "https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Standards-and-Guidelines/documents/examples/SHA256.pdf"
+    vectors: ["vectors/hashes-kdfs/sha-256.yaml"]
+    guide:
+      what: >-
+        SHA-256 maps any input to a 32-byte digest through a Merkle-Damgård construction over 64-byte blocks.
+      problem: >-
+        It gives a short fingerprint with collision, preimage and second-preimage resistance, used for integrity checks, commitments and inside signatures, HMAC and KDFs.
+      inputs_outputs: >-
+        Input: any byte string. Output: 32 bytes. The payload digests in this repository's manifests are SHA-256 over the encrypted file.
+      key_management: >-
+        A plain hash has no key. A digest stored next to a file only detects accidents; an attacker who can change the file can change the digest too, so authenticity needs a signature or a MAC.
+      common_mistakes:
+        - "Storing SHA-256(password): fast and unsalted, so offline guessing is cheap."
+        - "Using SHA-256(secret || message) as a MAC, which allows length-extension attacks; use HMAC."
+        - "Calling a hash 'encryption'; it cannot be reversed with a key."
+      new_systems: "Yes, as a hash. Use HMAC for MACs and Argon2id for passwords."
+      reproduce: |
+        p123 vectors verify --lesson 04-sha-256
+        printf abc | sha256sum
+    challenge:
+      prompt: A careless app stored SHA-256(password) without salt. The password is one of the listed words followed by two decimal digits. Find it.
+      public_inputs:
+        digest_hex: 02eb69ffafc0e55564b2ac6dffeac1679990cd1eb4be56780d6a44665d6b54e1
+        pattern: <word><00-99>
+        wordlist:
+          - dragon
+          - sunshine
+          - monkey
+          - shadow
+          - master
+          - letmein
+          - football
+          - baseball
+          - superman
+          - trustno1
+          - hunter
+          - qwerty
+          - starwars
+          - whatever
+          - princess
+          - freedom
+          - password
+          - welcome
+          - ninja
+          - azerty
+      submit: the password
+    payload:
+      path: "payloads/04-sha-256.age"
+      format: "application/json"
+      sha256: "70ee9012b1d87c10a1a51c40f6ba1fe3245f6148cab57c8716332c2292f92f68"
+      label: "browser-decryptable"

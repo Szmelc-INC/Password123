@@ -1,0 +1,50 @@
+schema_version: 1
+lessons:
+  - id: "04-hmac"
+    title: "HMAC"
+    module: "04-hashes-and-kdfs"
+    category: "message-authentication"
+    difficulty: "beginner"
+    status: "stable"
+    summary: "Keyed message authentication from a hash function. Integrity, not confidentiality."
+    recommended_for_new_systems: true
+    labels: ["public", "encrypted", "browser-decryptable"]
+    references:
+      - name: "RFC 2104: HMAC"
+        url: "https://www.rfc-editor.org/rfc/rfc2104"
+      - name: "RFC 4231: HMAC-SHA-2 test vectors"
+        url: "https://www.rfc-editor.org/rfc/rfc4231"
+    vectors: ["vectors/hashes-kdfs/hmac.yaml"]
+    guide:
+      what: >-
+        HMAC(K, m) = H((K xor opad) || H((K xor ipad) || m)). The nested construction makes it safe even with Merkle-Damgård hashes such as SHA-256.
+      problem: >-
+        Two parties sharing a key can detect any change to a message, such as an API request or a cookie.
+      inputs_outputs: >-
+        Input: a key (ideally as long as the hash output) and a message. Output: a tag of the hash length, which may be truncated to no fewer than 16 bytes in most protocols.
+      key_management: >-
+        Use random keys, separate from encryption keys. Rotate them like any shared secret.
+      common_mistakes:
+        - "Comparing tags with an early-exit comparison, which leaks timing; use a constant-time comparison."
+        - "H(key || message) instead of HMAC (length extension)."
+        - "Expecting HMAC to hide the message; it does not encrypt."
+      new_systems: "Yes. For combined confidentiality and integrity use an AEAD."
+      reproduce: |
+        p123 vectors verify --lesson 04-hmac
+        printf 'Hi There' | openssl dgst -sha256 -mac HMAC -macopt hexkey:0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b
+    challenge:
+      prompt: The HMAC-SHA-256 key below is challenge-only and public. Exactly one candidate tag is valid for the message. Which index (from 0) is it? Then explain why the comparison must be constant-time.
+      public_inputs:
+        candidate_tags_hex:
+          - 5a03e2435ff03cfc568c3c5645a069adf9689f40570a56e4149549072599b60e
+          - 5a43e2435ff03cfc568c3c4645a069adf9689f40570a56e4149549072599b60e
+          - 5a03e2435ff03cfc568c3c4645a069adf9689f40570a56e4149549072599b60e
+          - 5a03e2435ff03cfc568c3c4645a069adf9689f40570a56e4149541072599b60e
+        key_hex: 8422130038bb6aa51f28f35aa5db24e50d97f3f7cbfa60103ab8314414d06216
+        message_utf8: amount=25.00&currency=EUR&to=acct-1138
+      submit: the index of the valid tag
+    payload:
+      path: "payloads/04-hmac.age"
+      format: "application/json"
+      sha256: "a06d99ea004e3e9bc8d5361777e8c488af467b47d9f1a3caa6fe3e5117178877"
+      label: "browser-decryptable"

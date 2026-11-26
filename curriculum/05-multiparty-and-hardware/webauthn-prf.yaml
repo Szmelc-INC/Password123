@@ -1,0 +1,39 @@
+schema_version: 1
+lessons:
+  - id: "05-webauthn-prf"
+    title: "WebAuthn PRF"
+    module: "05-multiparty-and-hardware"
+    category: "hardware-bound-key-derivation"
+    difficulty: "advanced"
+    status: "draft"
+    summary: "Derive 32-byte key material from a passkey or security key without exposing the authenticator's secret."
+    recommended_for_new_systems: true
+    labels: ["public"]
+    references:
+      - name: "W3C Web Authentication Level 3: PRF extension"
+        url: "https://www.w3.org/TR/webauthn-3/"
+      - name: "typage: age identities backed by WebAuthn passkeys"
+        url: "https://github.com/FiloSottile/typage"
+    vectors: []
+    guide:
+      what: >-
+        The prf extension asks the authenticator to evaluate an HMAC-based pseudo-random
+        function, bound to the credential and the relying-party origin, over a salt chosen by the
+        site. The site receives 32 bytes; the underlying secret never leaves the authenticator.
+      problem: >-
+        Lets a web page derive an encryption key from a hardware-held credential, so a static
+        site can decrypt content with a passkey instead of a pasted private key.
+      inputs_outputs: >-
+        Input: a registered credential, the origin, and one or two 32-byte salts. Output: one or
+        two 32-byte values. The same inputs always give the same output.
+      key_management: >-
+        Outputs are bound to the origin, so a domain change loses access. Plan recovery with a
+        second credential or an offline recipient before relying on it.
+      common_mistakes:
+        - "Assuming every browser and authenticator supports prf; test the exact combination."
+        - "Having a single credential and no recovery path."
+        - "Treating the PRF output as a password; it is already uniform key material."
+      new_systems: "Promising for browser-side keys; this lesson is a draft until a prototype is tested (roadmap phase 5)."
+      reproduce: |
+        # Draft lesson: no vector. WebAuthn PRF needs a real authenticator.
+        p123 lessons show 05-webauthn-prf

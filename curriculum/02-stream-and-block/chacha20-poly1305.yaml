@@ -1,0 +1,47 @@
+schema_version: 1
+lessons:
+  - id: "02-chacha20-poly1305"
+    title: "ChaCha20-Poly1305"
+    module: "02-stream-and-block"
+    category: "symmetric-aead"
+    difficulty: "intermediate"
+    status: "stable"
+    summary: "A stream cipher plus a one-time MAC as an AEAD. Fast and constant-time in plain software."
+    recommended_for_new_systems: true
+    labels: ["public", "encrypted", "browser-decryptable"]
+    references:
+      - name: "RFC 8439: ChaCha20 and Poly1305 for IETF Protocols"
+        url: "https://www.rfc-editor.org/rfc/rfc8439"
+    vectors: ["vectors/symmetric/chacha20-poly1305.yaml"]
+    guide:
+      what: >-
+        ChaCha20 generates a keystream from a 256-bit key, a 96-bit nonce and a block counter. The first block derives a one-time Poly1305 key that authenticates the AAD and ciphertext.
+      problem: >-
+        It provides AEAD without AES hardware, using only additions, rotations and XORs, which are naturally constant-time. It is used in TLS 1.3, WireGuard, SSH and age.
+      inputs_outputs: >-
+        Input: a 256-bit key, a 96-bit nonce, plaintext and AAD. Output: ciphertext plus a 16-byte tag.
+      key_management: >-
+        Same rule as GCM: never reuse a nonce with a key. XChaCha20-Poly1305 extends the nonce to 192 bits so random nonces are safe for practically unlimited messages.
+      common_mistakes:
+        - "Nonce reuse, which leaks plaintext XORs and the Poly1305 key for that nonce."
+        - "Using Poly1305 with a long-term key; it is a one-time authenticator."
+        - "Forgetting that AAD must match exactly at decryption time."
+      new_systems: "Yes. It is the default AEAD in many modern protocols."
+      reproduce: |
+        p123 vectors verify --lesson 02-chacha20-poly1305
+    challenge:
+      prompt: The key below is a challenge-only key and is public on purpose. The message was sealed with exactly one of the candidate associated-data strings. Find which one opens it and read the plaintext.
+      public_inputs:
+        candidate_aad_utf8:
+          - to=alice;exp=2026-12-01
+          - to=bob;exp=2026-12-01
+          - to=carol;exp=2026-12-01
+        key_hex: e339f2b033db7a30413b837affd15f3c806650364d7609b7f2afe481784b5a15
+        nonce_hex: 0672ec342ef4854efa395333
+        sealed_hex: 0784e4554772666f5a5930b1eb1b3ae1fca5af9d39a6eb193a60c6063311aebd043e8c3cb9a5c58f0dc4819f9218472422fb7d1c8d2214a9fc2d00caf198e030
+      submit: the matching AAD and the plaintext
+    payload:
+      path: "payloads/02-chacha20-poly1305.age"
+      format: "application/json"
+      sha256: "2ac8a3c2faaa825a2a484732f61525dec378d7d346d17b12d9aaf8a24b0708a2"
+      label: "browser-decryptable"

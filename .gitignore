@@ -1,0 +1,32 @@
+# Local private identities and key material
+keys.txt
+*.agekey
+*.private-key
+*.identity
+
+# Local plaintext and temporary outputs
+*.decrypted.*
+*.plaintext.*
+*.tmp
+.tmp/
+plaintext-source/
+private-work/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Build output
+/_site/
+/p123
+/dist/
+node_modules/
+result
+
+# Editor and operating-system files
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db

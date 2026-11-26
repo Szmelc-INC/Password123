@@ -1,0 +1,14 @@
+schema_version: 1
+lesson_id: "06-hybrid-key-establishment"
+algorithm: "age hybrid recipient (ML-KEM-768 + X25519)"
+vectors:
+  - id: "age-hybrid-roundtrip"
+    kind: "property"
+    status: "verified"
+    verifier: "age-hybrid-roundtrip"
+    source:
+      document: "age v1.3.0 release notes: native post-quantum hybrid recipients"
+      url: "https://github.com/FiloSottile/age/releases/tag/v1.3.0"
+    inputs:
+      message: { utf8: "harvest now, decrypt later is the threat this protects against" }
+    notes: "Randomized self-check with filippo.io/age: a fresh age1pq1 recipient round-trips a file and an unrelated hybrid identity cannot open it."

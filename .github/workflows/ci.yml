@@ -1,0 +1,110 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  go:
+    name: go build, test, validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7.1.0
+        with:
+          go-version-file: go.mod
+      - name: gofmt
+        run: test -z "$(gofmt -l cmd internal)" || { gofmt -l cmd internal; exit 1; }
+      - name: go vet
+        run: go vet ./cmd/... ./internal/...
+      - name: go test (all vectors, including the 10k accumulated ML-KEM run)
+        run: go test -count=1 ./cmd/... ./internal/...
+      - name: build p123
+        run: go build -trimpath -o p123 ./cmd/p123
+      - name: reproducible binary
+        run: |
+          go build -trimpath -o p123-again ./cmd/p123
+          cmp p123 p123-again
+      - name: p123 validate (fail closed)
+        run: ./p123 validate --no-color
+      - name: p123 vectors verify
+        run: ./p123 vectors verify --no-color
+      - name: completions are in sync
+        run: |
+          for sh in bash zsh fish; do ./p123 completion "$sh" > "/tmp/p123.$sh"; done
+          diff -u completions/p123.bash /tmp/p123.bash
+          diff -u completions/_p123 /tmp/p123.zsh
+          diff -u completions/p123.fish /tmp/p123.fish
+      - name: build Pages twice and compare
+        run: |
+          ./p123 pages build --no-color --dir /tmp/site-a
+          ./p123 pages build --no-color --dir /tmp/site-b
+          diff -r /tmp/site-a /tmp/site-b
+          ./p123 pages verify --no-color --dir /tmp/site-a
+          ./p123 validate --no-color --skip-vectors --site /tmp/site-a
+
+  portal:
+    name: portal bundle and browser-side decryption
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+      - name: install locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: rebuild the bundle and require it to match the committed file
+        run: |
+          npm run build
+          git diff --exit-code -- ../docs/assets/age.js
+      - name: Go-made payloads decrypt with the browser bundle
+        run: npm test
+
+  packaging:
+    name: arch PKGBUILD lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: PKGBUILD is valid bash and lists completions, license, docs
+        run: |
+          bash -n packaging/arch/PKGBUILD
+          for f in completions/p123.bash completions/_p123 completions/p123.fish LICENSE README.md; do
+            grep -q "$(basename "$f")" packaging/arch/PKGBUILD || { echo "PKGBUILD does not install $f"; exit 1; }
+          done
+
+  nix:
+    name: nix flake
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: cachix/install-nix-action@382a9ed9481c7c1f94f68b72ef105b3417c73877 # v32.1.0
+      - name: nix build and run
+        run: |
+          nix build .#default --print-build-logs
+          ./result/bin/p123 version
+          ./result/bin/p123 --repo . vectors verify --no-color
+      - name: nix flake check
+        run: nix flake check --no-build

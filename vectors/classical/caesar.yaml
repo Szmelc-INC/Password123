@@ -1,0 +1,19 @@
+schema_version: 1
+lesson_id: "01-caesar"
+algorithm: "Caesar shift cipher"
+vectors:
+  - id: "wikipedia-shift-23"
+    kind: "adapted"
+    status: "verified"
+    verifier: "caesar"
+    source:
+      document: "Wikipedia, Caesar cipher (worked example: left shift of 3)"
+      section: "Example"
+      url: "https://en.wikipedia.org/wiki/Caesar_cipher"
+    params:
+      shift: { int: 23 }
+    inputs:
+      plaintext: { utf8: "THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG" }
+    expected:
+      ciphertext: { utf8: "QEB NRFZH YOLTK CLU GRJMP LSBO QEB IXWV ALD" }
+    notes: "There is no standards body for Caesar. This is a textbook example; a left shift of 3 equals a right shift of 23."

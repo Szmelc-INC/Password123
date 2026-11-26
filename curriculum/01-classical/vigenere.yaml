@@ -1,0 +1,45 @@
+schema_version: 1
+lessons:
+  - id: "01-vigenere"
+    title: "Vigenère cipher"
+    module: "01-classical"
+    category: "substitution"
+    difficulty: "beginner"
+    status: "deprecated"
+    summary: "Repeating-key polyalphabetic substitution. The repetition is the weakness."
+    recommended_for_new_systems: false
+    labels: ["public", "encrypted", "browser-decryptable"]
+    references:
+      - name: "Wikipedia: Vigenère cipher"
+        url: "https://en.wikipedia.org/wiki/Vigen%C3%A8re_cipher"
+      - name: "Wikipedia: Kasiski examination"
+        url: "https://en.wikipedia.org/wiki/Kasiski_examination"
+    vectors: ["vectors/classical/vigenere.yaml"]
+    guide:
+      what: >-
+        A keyword is repeated under the plaintext. Each plaintext letter is shifted by the value of the key letter above it, so the same plaintext letter can encrypt to different letters.
+      problem: >-
+        It defeats single-alphabet frequency analysis, which broke Caesar and simple substitution.
+      inputs_outputs: >-
+        Input: text and a key of letters. Output: text of the same length. In this repository the key index advances only on letters; case and other characters are kept.
+      key_management: >-
+        The keyword is shared in advance. A long, random, never-reused key turns it into a one-time pad; a short repeated key does not.
+      common_mistakes:
+        - "Short keys: once the key length is found, each column is a Caesar cipher."
+        - "Dictionary words as keys, which shrink the search space."
+        - "Assuming 'polyalphabetic' means secure; Kasiski (1863) and the index of coincidence break it."
+      new_systems: "Never. It has no integrity protection and falls to statistics."
+      reproduce: |
+        p123 vectors verify --lesson 01-vigenere
+        p123 lessons show 01-vigenere
+    challenge:
+      prompt: Break this Vigenère ciphertext. The key is 4 to 8 random upper-case letters; the key index advances only on letters, case and punctuation are kept.
+      public_inputs:
+        ciphertext_utf8: Ltcjhplmrmlxeh ttwlawj hlva hrwsiz zemyiwprmsi bti eovaj tpuxqwzpz, cay ksl vauvlamjl bpf mo yyppv sjrvuiox. Fyji pmv vlc hjeral ex byvaj, jmpyc ytcftr kk ksl geuypyxack tz nqxk l Jeaxrc jmlmvc, hrz jrno gkqlxu gws sp zshavo ic bwvbbijhp luehdjtz. Owxzdrm jtktjiz yyla vauvlaiz kilnqaskd vj lqrtuxack zmxas ctui qu ntal pmv dhqa urca sb yyp riu, xf eoi znjehryjj mlxsjvy yiljrelh yngslvpjoe mvwldpuxo xylyi pmv vlc hjeral wx r qhgpti. Eoi esupe sb hftugeivyji cnmpz e ojtzuh, esupwijivya ioyzxhxa. Rfolvj hzaoinx rgvmz yytz wpwlnaynj vyamnjcj.
+        key_length_range: 4-8
+      submit: the key and the plaintext
+    payload:
+      path: "payloads/01-vigenere.age"
+      format: "application/json"
+      sha256: "ead4222f782da9486d1291b83c27e584fd70a3be00e9b073667f60580ed37fda"
+      label: "browser-decryptable"

@@ -1,0 +1,45 @@
+schema_version: 1
+lessons:
+  - id: "02-rc4"
+    title: "RC4"
+    module: "02-stream-and-block"
+    category: "stream-cipher"
+    difficulty: "intermediate"
+    status: "deprecated"
+    summary: "A once-ubiquitous stream cipher with biased keystream. Prohibited in TLS since RFC 7465."
+    recommended_for_new_systems: false
+    labels: ["public", "encrypted", "browser-decryptable"]
+    references:
+      - name: "RFC 6229: Test Vectors for the Stream Cipher RC4"
+        url: "https://www.rfc-editor.org/rfc/rfc6229"
+      - name: "RFC 7465: Prohibiting RC4 Cipher Suites"
+        url: "https://www.rfc-editor.org/rfc/rfc7465"
+    vectors: ["vectors/symmetric/rc4.yaml"]
+    guide:
+      what: >-
+        RC4 expands a key into a pseudo-random keystream that is XORed with the plaintext. Encryption and decryption are the same operation.
+      problem: >-
+        It was tiny and fast in software, so it spread into WEP, early TLS, and many products.
+      inputs_outputs: >-
+        Input: a key of 1 to 256 bytes and data. Output: data of the same length. There is no nonce input and no authentication tag.
+      key_management: >-
+        Every message needs a fresh key, because a key always produces the same keystream. WEP built per-packet keys by concatenating a short IV with a long-term key, which enabled related-key attacks.
+      common_mistakes:
+        - "Reusing a key: c1 XOR c2 = m1 XOR m2 reveals both plaintexts."
+        - "Ignoring keystream biases: early output bytes are measurably non-random."
+        - "Assuming a stream cipher provides integrity; flipping ciphertext bits flips plaintext bits."
+      new_systems: "Never. Use ChaCha20-Poly1305 or AES-256-GCM."
+      reproduce: |
+        p123 vectors verify --lesson 02-rc4
+    challenge:
+      prompt: Two messages were encrypted with RC4 under the SAME key (no nonce). The first plaintext is known. Recover the second plaintext without the key.
+      public_inputs:
+        ciphertext_1_hex: 0e8e205f99b0c46b9166bf450a89948fc2109f4e94f6f54557da6e39fd0050f7d16d14208627b6a3bc257751dd6e15
+        ciphertext_2_hex: 0e8e205f99b0c46b916ebf451aec8488b0648421f5f4f5494dc1744ded0657ecbd6c1c2f8f53c4a8c2430523ac767c
+        known_plaintext_utf8: TRANSFER 100 EUR TO ACCOUNT 001-ALICE; REF 7781
+      submit: the second plaintext
+    payload:
+      path: "payloads/02-rc4.age"
+      format: "application/json"
+      sha256: "f409d9308525465d4360e17824ced6100050b614160c22f06cd5b1a3b302b6a7"
+      label: "browser-decryptable"

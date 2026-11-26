@@ -1,0 +1,50 @@
+schema_version: 1
+lessons:
+  - id: "03-diffie-hellman"
+    title: "Finite-field Diffie-Hellman"
+    module: "03-asymmetric-and-kex"
+    category: "key-exchange"
+    difficulty: "intermediate"
+    status: "experimental"
+    summary: "Agree on a shared secret over a public channel. Key exchange, not encryption."
+    recommended_for_new_systems: false
+    labels: ["public", "encrypted", "browser-decryptable"]
+    references:
+      - name: "RFC 3526: More MODP Diffie-Hellman groups for IKE"
+        url: "https://www.rfc-editor.org/rfc/rfc3526"
+      - name: "RFC 7919: Negotiated Finite Field DH Ephemeral Parameters for TLS"
+        url: "https://www.rfc-editor.org/rfc/rfc7919"
+      - name: "Adrian et al., Imperfect Forward Secrecy (Logjam)"
+        url: "https://weakdh.org/"
+    vectors: ["vectors/asymmetric/diffie-hellman.yaml"]
+    guide:
+      what: >-
+        Both parties agree on a prime p and generator g. Alice sends A = g^a mod p, Bob sends B = g^b mod p, and both compute K = g^(ab) mod p. An eavesdropper sees A and B but must solve a discrete logarithm to find K.
+      problem: >-
+        Two parties who share no secret can establish one. With fresh exponents per session it gives forward secrecy.
+      inputs_outputs: >-
+        Input: group parameters (p, g, subgroup order q) and a random private exponent per party. Output: a shared group element, which must go through a KDF before use as a key.
+      key_management: >-
+        Use standard groups of at least 2048 bits (RFC 3526 group 14 or RFC 7919 ffdhe2048), fresh ephemeral exponents, and authenticate the exchange; unauthenticated DH is open to man-in-the-middle attacks.
+      common_mistakes:
+        - "Small or custom groups, where discrete logs are cheap (Logjam)."
+        - "Not validating the peer value (small-subgroup and invalid-element attacks)."
+        - "Using the raw shared value as a key instead of passing it through a KDF."
+        - "Treating DH as encryption; it only establishes key material."
+      new_systems: "Prefer X25519, or hybrid X25519 + ML-KEM-768. Finite-field DH is legacy."
+      reproduce: |
+        p123 vectors verify --lesson 03-diffie-hellman
+    challenge:
+      prompt: Alice and Bob ran Diffie-Hellman in a 48-bit safe-prime group. An eavesdropper saw p, g, A and B. Compute their shared secret by solving a discrete logarithm.
+      public_inputs:
+        A_dec: "28889985951357"
+        B_dec: "206270272481316"
+        g: 4
+        p_dec: "213742919478443"
+        subgroup_order_q_dec: "106871459739221"
+      submit: the shared secret K (decimal)
+    payload:
+      path: "payloads/03-diffie-hellman.age"
+      format: "application/json"
+      sha256: "ca92416313fcebc46d9cf4c98782d255a5e0d675baf2b0edad2aa66dce917ddd"
+      label: "browser-decryptable"

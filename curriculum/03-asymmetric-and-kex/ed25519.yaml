@@ -1,0 +1,50 @@
+schema_version: 1
+lessons:
+  - id: "03-ed25519"
+    title: "Ed25519"
+    module: "03-asymmetric-and-kex"
+    category: "digital-signature"
+    difficulty: "intermediate"
+    status: "stable"
+    summary: "Deterministic Edwards-curve signatures. Authenticity and integrity, not encryption."
+    recommended_for_new_systems: true
+    labels: ["public", "encrypted", "browser-decryptable"]
+    references:
+      - name: "RFC 8032: Edwards-Curve Digital Signature Algorithm (EdDSA)"
+        url: "https://www.rfc-editor.org/rfc/rfc8032"
+    vectors: ["vectors/asymmetric/ed25519.yaml"]
+    guide:
+      what: >-
+        The signer hashes a 32-byte seed into a scalar and a nonce key, derives the nonce deterministically from the message, and outputs a 64-byte signature (R, S). Anyone with the 32-byte public key can verify it.
+      problem: >-
+        Proves that the holder of a private key approved exact message bytes. It is used for SSH keys, release signing, and software updates.
+      inputs_outputs: >-
+        Sign: 32-byte seed and message, giving a 64-byte signature. Verify: public key, message and signature, giving true or false.
+      key_management: >-
+        Keep signing keys separate from encryption keys. Publish public keys through a channel users can verify independently; plan for revocation and rotation.
+      common_mistakes:
+        - "Treating a signature as encryption; the message stays public."
+        - "Verifying with a public key fetched from the same place as the signed data."
+        - "Signing different serializations of the 'same' data."
+      new_systems: "Yes. Consider ML-DSA alongside it for long-lived post-quantum signatures."
+      reproduce: |
+        p123 vectors verify --lesson 03-ed25519
+    challenge:
+      prompt: A release channel publishes messages signed with Ed25519. Which of the four (message, signature) pairs verify under the public key? Indices start at 0.
+      public_inputs:
+        pairs:
+          - message_utf8: release v1.0.0 sha256=3f1c...
+            signature_hex: f2fd1ec1b543e6333c2755580b70a9e76bf19011aff158b19a5714c43ea7e40b6231ecce2730d01bbf6f13399c7b354e0f6be90f39d14111b65fdfb73880bd09
+          - message_utf8: release v1.0.1 sha256=a9e2...
+            signature_hex: 1f1e34906d7b39093ec786c8508921bc6454abbda94bf68543548849e2df580c77fc5a5eb79ce6e65ba8aeb6561f4074684848512b1099672b121dee23cc2005
+          - message_utf8: release v1.0.2 sha256=77b0...
+            signature_hex: 9c3ca6d33e5df7597dfe8dd2bb54183a61b95c79b8703992aaca8d67665a3ad58a0be71de2b2fd4f45e9c34cf2434f30b7949d95f074938e78ed8b94bad0db01
+          - message_utf8: release v1.0.3 sha256=c4d8...
+            signature_hex: 147d2ca5035f6deabd84c2b533b4c6e6ee4d6972b050258b951492ee83e1e026b0dda6d788394f5527a0110ba89f64b8eab250c152afa302f4e82a7ad732b102
+        public_key_hex: 0c5e4fd64019a5e6ee9fe09853538c1901f0e5ab5d752bab1ac3445edebb7b5b
+      submit: the list of valid indices
+    payload:
+      path: "payloads/03-ed25519.age"
+      format: "application/json"
+      sha256: "ea45f4c0b67c1b8622501b88f680fbd49d8a73ad2a9278bac03ad238811404d4"
+      label: "browser-decryptable"

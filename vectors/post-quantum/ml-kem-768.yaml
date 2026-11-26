@@ -1,0 +1,29 @@
+schema_version: 1
+lesson_id: "06-ml-kem-768"
+algorithm: "ML-KEM-768 (FIPS 203)"
+vectors:
+  - id: "cctv-accumulated-100"
+    kind: "community"
+    status: "verified"
+    verifier: "ml-kem-768-accumulated"
+    source:
+      document: "C2SP Community Cryptography Test Vectors (CCTV), ML-KEM accumulated vectors"
+      test_case: "ML-KEM-768, 100 iterations"
+      url: "https://c2sp.org/CCTV/ML-KEM"
+    params:
+      iterations: { int: 100 }
+    expected:
+      accumulated: { hex: "1114b1b6699ed191734fa339376afa7e285c9e6acf6ff0177d346696ce564415" }
+  - id: "cctv-accumulated-10000"
+    kind: "community"
+    status: "verified"
+    verifier: "ml-kem-768-accumulated"
+    source:
+      document: "C2SP Community Cryptography Test Vectors (CCTV), ML-KEM accumulated vectors"
+      test_case: "ML-KEM-768, 10000 iterations"
+      url: "https://c2sp.org/CCTV/ML-KEM"
+    params:
+      iterations: { int: 10000 }
+    expected:
+      accumulated: { hex: "8a518cc63da366322a8e7a818c7a0d63483cb3528d34a4cf42f35d5ad73f22fc" }
+    notes: "Seeds, messages and invalid ciphertexts come from one SHAKE128 stream; every encapsulation key, ciphertext and shared key is absorbed into a second SHAKE128. Covers implicit rejection."

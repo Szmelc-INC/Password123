@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://szmelc-inc.github.io/Password123/schemas/payload.schema.json",
+  "title": "Password123 encrypted payload content (plaintext before encryption)",
+  "description": "Validated locally by p123 encrypt before the plaintext is encrypted. The plaintext itself never enters Git.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "lesson_id", "kind", "solution", "explanation", "verification"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "lesson_id": { "type": "string", "pattern": "^(0[1-6]|demo)-[a-z0-9]+(-[a-z0-9]+)*$" },
+    "kind": { "enum": ["challenge-solution", "instructor-note", "private-input", "demo"] },
+    "flag": { "type": "string", "pattern": "^P123\\{[0-9a-f]{16,64}\\}$" },
+    "solution": { "type": "object" },
+    "explanation": { "type": "string", "minLength": 1 },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["expected_result", "test_command"],
+      "properties": {
+        "expected_result": { "type": "string", "minLength": 1 },
+        "test_command": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

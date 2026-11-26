@@ -1,0 +1,5 @@
+* text=auto eol=lf
+*.age binary
+docs/assets/age.js linguist-generated=true -diff
+web/package-lock.json linguist-generated=true
+completions/* linguist-generated=true

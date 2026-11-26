@@ -1,0 +1,44 @@
+schema_version: 1
+lessons:
+  - id: "04-blake3"
+    title: "BLAKE3"
+    module: "04-hashes-and-kdfs"
+    category: "hash-function"
+    difficulty: "intermediate"
+    status: "stable"
+    summary: "A parallel tree hash with hash, keyed-hash and derive-key modes in one function."
+    recommended_for_new_systems: true
+    labels: ["public", "encrypted", "browser-decryptable"]
+    references:
+      - name: "BLAKE3 specification and reference implementation"
+        url: "https://github.com/BLAKE3-team/BLAKE3"
+      - name: "BLAKE3 official test vectors"
+        url: "https://github.com/BLAKE3-team/BLAKE3/blob/master/test_vectors/test_vectors.json"
+    vectors: ["vectors/hashes-kdfs/blake3.yaml"]
+    guide:
+      what: >-
+        BLAKE3 splits input into 1 KiB chunks, compresses each with a reduced-round BLAKE2s function, and combines them in a binary tree, which allows SIMD and multi-thread hashing and extendable output.
+      problem: >-
+        Very fast hashing for large data with built-in modes for MACs (keyed_hash) and domain-separated key derivation (derive_key).
+      inputs_outputs: >-
+        Hash: any input, any output length (32 bytes by default). keyed_hash: plus a 32-byte key. derive_key: a context string and key material.
+      key_management: >-
+        keyed_hash keys are 32 random bytes. derive_key context strings should be hard-coded and globally unique, such as "app 2026-11 session key".
+      common_mistakes:
+        - "Using BLAKE3 for password storage; it is deliberately fast."
+        - "Reusing one derive_key context for different purposes."
+      new_systems: "Yes, where a fast general-purpose hash is needed and interoperability allows it."
+      reproduce: |
+        p123 vectors verify --lesson 04-blake3
+    challenge:
+      prompt: Use BLAKE3 in derive_key mode with the context string below and the given key material. Output 32 bytes.
+      public_inputs:
+        context_utf8: Password123 2026-11 lesson 04-blake3 derive_key
+        key_material_hex: 62a2ba865c2099c3e0fe3258086a0450eb1d49a81f07e86068ae29f30e1b5a17
+        output_bytes: 32
+      submit: the derived key in hex
+    payload:
+      path: "payloads/04-blake3.age"
+      format: "application/json"
+      sha256: "7a693b7c546bef20f187bee020344da6fb848827e8e098917a2b84daef575d08"
+      label: "browser-decryptable"

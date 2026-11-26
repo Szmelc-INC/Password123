@@ -1,0 +1,49 @@
+schema_version: 1
+lessons:
+  - id: "04-argon2id"
+    title: "Argon2id"
+    module: "04-hashes-and-kdfs"
+    category: "password-kdf"
+    difficulty: "intermediate"
+    status: "stable"
+    summary: "Memory-hard password hashing, the winner of the Password Hashing Competition."
+    recommended_for_new_systems: true
+    labels: ["public", "encrypted", "browser-decryptable"]
+    references:
+      - name: "RFC 9106: Argon2 Memory-Hard Function"
+        url: "https://www.rfc-editor.org/rfc/rfc9106"
+      - name: "Argon2 reference implementation and test suite"
+        url: "https://github.com/P-H-C/phc-winner-argon2"
+    vectors: ["vectors/hashes-kdfs/argon2id.yaml"]
+    guide:
+      what: >-
+        Argon2id fills a large memory array with blocks that depend on the password and salt, mixing data-independent passes (side-channel resistance) and data-dependent passes (GPU resistance), then outputs a tag.
+      problem: >-
+        Attackers with GPUs or ASICs gain far less over defenders when each guess needs megabytes of memory as well as time.
+      inputs_outputs: >-
+        Input: password, salt, time cost t, memory m in KiB, parallelism p, tag length, and optional secret and associated data. Output: a tag, often stored in the PHC string format $argon2id$v=19$m=...,t=...,p=...$salt$tag.
+      key_management: >-
+        Pick parameters by benchmarking on the target hardware (RFC 9106 section 4; OWASP suggests at least m=19456 KiB, t=2, p=1). A secret "pepper" kept outside the database adds defence if it is stored separately.
+      common_mistakes:
+        - "Copying parameters without measuring, giving either too-weak settings or a denial-of-service risk."
+        - "Choosing Argon2i or Argon2d without a reason; Argon2id is the recommended default."
+        - "Expecting browser WebCrypto to provide it; browsers need a WebAssembly implementation."
+      new_systems: "Yes, for password storage and password-based key derivation."
+      reproduce: |
+        p123 vectors verify --lesson 04-argon2id
+    challenge:
+      prompt: Recover the 3-digit PIN hashed with Argon2id (t=2, m=19456 KiB, p=1, 32-byte tag). Compare the time per guess with the PBKDF2 challenge.
+      public_inputs:
+        memory_kib: 19456
+        parallelism: 1
+        password_space: 000-999
+        salt_hex: 732222d8c6c01ea2b35a141d82660c77
+        tag_hex: 7798ae0246745727f18c0b8f690eb9e82f892a155762974c41df0271e959c28f
+        tag_len: 32
+        time_cost: 2
+      submit: the PIN
+    payload:
+      path: "payloads/04-argon2id.age"
+      format: "application/json"
+      sha256: "c636546e788512abd9288a45fd1d3a2864d913b2d11cd0d28b004d354a2ff2e6"
+      label: "browser-decryptable"
