@@ -100,6 +100,11 @@ func TestFailClosed(t *testing.T) {
 		{"remote script in portal", "portal", func(t *testing.T, root string) {
 			replaceIn(t, filepath.Join(root, "docs/index.html"), "</head>", `<script src="https://cdn.example/x.js"></script></head>`)
 		}},
+		{"demo identity copied to another path", "secrets", func(t *testing.T, root string) {
+			b, _ := os.ReadFile(filepath.Join(root, DemoIdentityPath))
+			os.MkdirAll(filepath.Join(root, "docs/demo"), 0o755)
+			os.WriteFile(filepath.Join(root, "docs/demo/demo-identity.txt"), b, 0o644)
+		}},
 		{"demo identity opens a real payload", "demo", func(t *testing.T, root string) {
 			b, _ := os.ReadFile(filepath.Join(root, "payloads/demo-welcome.age"))
 			os.WriteFile(filepath.Join(root, "payloads/01-caesar.age"), b, 0o644)
@@ -113,5 +118,25 @@ func TestFailClosed(t *testing.T) {
 				t.Fatalf("expected a %s error", tc.check)
 			}
 		})
+	}
+}
+
+// TestRelativeSiteDir is a regression test: a built site passed as a relative
+// path (as deploy-pages does with --site _site) must accept its demo identity.
+func TestRelativeSiteDir(t *testing.T) {
+	root := copyRepo(t)
+	site := filepath.Join(root, "_site", "demo")
+	os.MkdirAll(site, 0o755)
+	b, _ := os.ReadFile(filepath.Join(root, DemoIdentityPath))
+	os.WriteFile(filepath.Join(site, "demo-identity.txt"), b, 0o644)
+	wd, _ := os.Getwd()
+	defer os.Chdir(wd)
+	os.Chdir(root)
+	if errs := errorsFor(Run(root, Options{SkipVectors: true, ExtraScanDirs: []string{"_site"}}), "secrets"); len(errs) > 0 {
+		t.Fatalf("relative site dir rejected the demo identity: %+v", errs)
+	}
+	os.WriteFile(filepath.Join(root, "_site", "app.js"), b, 0o644)
+	if len(errorsFor(Run(root, Options{SkipVectors: true, ExtraScanDirs: []string{"_site"}}), "secrets")) == 0 {
+		t.Fatal("identity copied elsewhere in the site was not caught")
 	}
 }
