@@ -95,8 +95,8 @@ Every Pages build is deterministic and ships a `SHA256SUMS`. Releases (`v*` tags
 
 ```sh
 sha256sum -c SHA256SUMS
-gh attestation verify password123-site_v0.1.0.tar.gz --repo Szmelc-INC/Password123
-mkdir site && tar xzf password123-site_v0.1.0.tar.gz -C site && p123 pages verify --dir site
+gh attestation verify password123-site_v0.1.1.tar.gz --repo Szmelc-INC/Password123
+mkdir site && tar xzf password123-site_v0.1.1.tar.gz -C site && p123 pages verify --dir site
 ```
 
 A checksum stored next to the file it describes only detects accidents. The attestation is the independent trust anchor. See ARCHITECTURE.md sections 9.4 and 12.

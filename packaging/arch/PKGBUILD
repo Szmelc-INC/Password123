@@ -1,6 +1,6 @@
 # Maintainer: Szmelc-INC <https://github.com/Szmelc-INC>
 pkgname=password123
-pkgver=0.1.0
+pkgver=0.1.1
 pkgrel=1
 pkgdesc="Zero-knowledge cryptography lab CLI/TUI: lessons, verified test vectors, age-encrypted challenges (p123)"
 arch=('x86_64' 'aarch64')

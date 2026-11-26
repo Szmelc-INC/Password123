@@ -7,7 +7,7 @@
     let
       systems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
       forAll = f: nixpkgs.lib.genAttrs systems (system: f nixpkgs.legacyPackages.${system});
-      version = "0.1.0";
+      version = "0.1.1";
     in {
       packages = forAll (pkgs: rec {
         p123 = pkgs.buildGoModule {
