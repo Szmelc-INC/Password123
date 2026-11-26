@@ -24,6 +24,8 @@ jobs:
       - uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7.1.0
         with:
           go-version-file: go.mod
+      - name: actionlint (workflow syntax and shell checks)
+        run: go run github.com/rhysd/actionlint/cmd/actionlint@v1.7.12 -color=false
       - name: gofmt
         run: test -z "$(gofmt -l cmd internal)" || { gofmt -l cmd internal; exit 1; }
       - name: go vet
