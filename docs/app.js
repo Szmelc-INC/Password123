@@ -129,6 +129,16 @@ function takeIdentity() {
 }
 
 async function decrypt() {
+  if ($("decrypt").disabled) return;
+  $("decrypt").disabled = true;
+  try {
+    await decryptInner();
+  } finally {
+    $("decrypt").disabled = false;
+  }
+}
+
+async function decryptInner() {
   const out = $("plaintext");
   out.hidden = true;
   out.textContent = "";
@@ -195,10 +205,20 @@ async function main() {
     status("Identity file read into memory. Press Decrypt.");
   });
   $("use-demo").addEventListener("click", async () => {
-    const r = await fetch(state.site.demo.identity, { cache: "no-store", credentials: "omit" });
-    $("identity").value = await r.text();
-    $("payload-select").value = state.site.demo.payloads[0].path;
-    status("Demo identity loaded. It is public and opens demo payloads only.");
+    // Block Decrypt until the identity has arrived, so a quick second click
+    // never runs against an empty input.
+    for (const b of [$("use-demo"), $("decrypt")]) b.disabled = true;
+    try {
+      const r = await fetch(state.site.demo.identity, { cache: "no-store", credentials: "omit" });
+      if (!r.ok) throw new Error(`demo identity not found (${r.status})`);
+      $("identity").value = await r.text();
+      $("payload-select").value = state.site.demo.payloads[0].path;
+      status("Demo identity loaded. It is public and opens demo payloads only.");
+    } catch (e) {
+      status("Could not load the demo identity: " + e.message, "err");
+    } finally {
+      for (const b of [$("use-demo"), $("decrypt")]) b.disabled = false;
+    }
   });
   window.addEventListener("pagehide", lock);
   const want = decodeURIComponent(location.hash.slice(1));

@@ -53,6 +53,10 @@ Do not mix classic (`age1`) and post-quantum (`age1pq1`) recipients in one recip
 3. Test with each remaining identity.
 4. If the removal is because of compromise, change the secrets themselves (regenerate challenges). Rotation cannot revoke copies the former recipient already has.
 
+## Dependency updates
+
+Dependabot opens weekly pull requests for actions, Go modules and the portal bundle. Any `go.mod` change also changes the Nix `vendorHash`: the `nix flake` job fails and prints `got: sha256-...`; put that value in `flake.nix`. A bundle update must keep `docs/assets/age.js` byte-identical to `npm run build`, or the rebuilt file must be committed and reviewed.
+
 ## Runbook: release
 
 ```sh
