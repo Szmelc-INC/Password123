@@ -499,6 +499,14 @@ var skipDirs = map[string]bool{".git": true, "node_modules": true}
 func (r *run) checkPrivateMaterial(extra []string) {
 	// The demo identity is allowed only at exactly demo/demo-identity.txt
 	// relative to the scanned directory (the repository or a built site).
+	// Built sites passed with --site are scanned as their own base, so the
+	// repository scan skips them (they may live inside the checkout).
+	separate := map[string]bool{}
+	for _, d := range extra {
+		if abs, err := filepath.Abs(d); err == nil {
+			separate[abs] = true
+		}
+	}
 	scan := func(base string, isRepo bool) int {
 		hits := 0
 		if abs, err := filepath.Abs(base); err == nil {
@@ -509,7 +517,7 @@ func (r *run) checkPrivateMaterial(extra []string) {
 				return nil
 			}
 			if d.IsDir() {
-				if skipDirs[d.Name()] || (isRepo && d.Name() == "_site") {
+				if skipDirs[d.Name()] || (isRepo && (d.Name() == "_site" || (p != base && separate[p]))) {
 					return filepath.SkipDir
 				}
 				return nil

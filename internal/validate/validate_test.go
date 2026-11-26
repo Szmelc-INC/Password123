@@ -135,6 +135,18 @@ func TestRelativeSiteDir(t *testing.T) {
 	if errs := errorsFor(Run(root, Options{SkipVectors: true, ExtraScanDirs: []string{"_site"}}), "secrets"); len(errs) > 0 {
 		t.Fatalf("relative site dir rejected the demo identity: %+v", errs)
 	}
+	// A site built into a non-underscore directory inside the checkout (as the
+	// release workflow once did with --dir site) must also be accepted.
+	other := filepath.Join(root, "site", "demo")
+	os.MkdirAll(other, 0o755)
+	os.WriteFile(filepath.Join(other, "demo-identity.txt"), b, 0o644)
+	if errs := errorsFor(Run(root, Options{SkipVectors: true, ExtraScanDirs: []string{"site"}}), "secrets"); len(errs) > 0 {
+		t.Fatalf("in-repo site dir rejected the demo identity: %+v", errs)
+	}
+	if len(errorsFor(Run(root, Options{SkipVectors: true}), "secrets")) == 0 {
+		t.Fatal("without --site, a demo identity copy under site/ must be an error")
+	}
+	os.RemoveAll(filepath.Join(root, "site"))
 	os.WriteFile(filepath.Join(root, "_site", "app.js"), b, 0o644)
 	if len(errorsFor(Run(root, Options{SkipVectors: true, ExtraScanDirs: []string{"_site"}}), "secrets")) == 0 {
 		t.Fatal("identity copied elsewhere in the site was not caught")
