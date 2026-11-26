@@ -48,4 +48,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.ref_name }}
-        run: gh release create "$TAG" dist/* --repo "$GITHUB_REPOSITORY" --title "$TAG" --notes "Verify: sha256sum -c SHA256SUMS && gh attestation verify <file> --repo $GITHUB_REPOSITORY"
+        run: |
+          gh release create "$TAG" dist/* --repo "$GITHUB_REPOSITORY" --title "$TAG" \
+            --notes "Verify downloads with sha256sum -c SHA256SUMS and gh attestation verify FILE --repo $GITHUB_REPOSITORY"
