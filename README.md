@@ -47,7 +47,7 @@ Install with packages:
 
 ```sh
 nix run github:Szmelc-INC/Password123 -- lessons list    # flake: package, app, devShell
-makepkg -si -p packaging/arch/PKGBUILD                   # Arch Linux (installs completions)
+(cd packaging/arch && makepkg -si)                       # Arch Linux (installs completions)
 make install PREFIX=~/.local                             # binary + bash/zsh/fish completions
 ```
 
