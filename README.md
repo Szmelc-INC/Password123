@@ -16,6 +16,7 @@ GitHub cannot make one folder of a public repository private. Password123 separa
 - **Specification and threat model:** [ARCHITECTURE.md](ARCHITECTURE.md)
 - **Adding lessons, enrolling recipients, rotation:** [CONTRIBUTING.md](CONTRIBUTING.md)
 - **Reporting and leak response:** [SECURITY.md](SECURITY.md)
+- **Team keys (signing, encryption, authorization):** [team/README.md](team/README.md) · [integration](team/INTEGRATION.md) · [agent prompts](team/onboarding/AGENT-PROMPTS.md)
 
 ## What is inside
 
