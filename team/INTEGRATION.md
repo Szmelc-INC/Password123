@@ -116,8 +116,9 @@ cat team/members/<handle>/age.pub
 The `ci` workflow runs on every PR:
 
 ```sh
-shellcheck -S warning scripts/team.sh
+shellcheck -S warning scripts/team.sh scripts/team_test.sh
 bash scripts/team.sh verify --no-color
+bash scripts/team_test.sh          # end-to-end run with throwaway keys
 ```
 
 Releases should run `scripts/team.sh verify --strict` and fail when `SHA256SUMS.sig` is stale.

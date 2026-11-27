@@ -30,8 +30,9 @@ jobs:
         run: test -z "$(gofmt -l cmd internal)" || { gofmt -l cmd internal; exit 1; }
       - name: team key register (records, signatures, checksums)
         run: |
-          shellcheck -S warning scripts/team.sh
+          shellcheck -S warning scripts/team.sh scripts/team_test.sh
           bash scripts/team.sh verify --no-color
+          bash scripts/team_test.sh
       - name: go vet
         run: go vet ./cmd/... ./internal/...
       - name: go test (all vectors, including the 10k accumulated ML-KEM run)

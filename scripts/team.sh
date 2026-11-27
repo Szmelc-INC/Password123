@@ -78,6 +78,23 @@ EOF
 
 # ---------- helpers ----------
 valid_handle() { [[ "$1" =~ ^[a-z0-9][a-z0-9-]{1,31}$ ]]; }
+# Emails become allowed_signers principals, where ',', '*', '?' and '!' are
+# pattern syntax. Only a plain address is accepted, so one member cannot claim
+# another member's principal or a wildcard.
+valid_email() { [[ "$1" =~ ^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$ ]]; }
+valid_github() { [[ "$1" =~ ^[A-Za-z0-9-]{1,39}$ ]]; }
+valid_date() { [[ "$1" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] && [[ "$(date -u -d "$1" +%F 2>/dev/null)" == "$1" ]]; }
+valid_ssh_pub() { [[ "$1" =~ ^ssh-ed25519\ AAAAC3NzaC1lZDI1NTE5[A-Za-z0-9+/]{43,}=*(\ [^[:space:]]+)?$ ]]; }
+
+# signer_file <handle> <namespace>: a one-line allowed-signers file holding only
+# that member's own key, so a signature is attributed by key, never by a
+# principal pattern that another record could also match.
+signer_file() {
+	local tmp
+	tmp="$(mktemp)"
+	printf '%s namespaces="%s" %s\n' "$1" "$2" "$(awk '{print $1, $2}' "$MEMBERS/$1/ssh.pub")" >"$tmp"
+	printf '%s' "$tmp"
+}
 field() { sed -n "s/^$2:[[:space:]]*//p" "$1" | head -n1 | sed -e 's/[[:space:]]*$//' -e 's/^"\(.*\)"$/\1/'; }
 today() { date -u +%F; }
 ssh_fp() { ssh-keygen -l -E sha256 -f "$1" | awk '{print $2}'; }
@@ -135,8 +152,8 @@ parse_meta() {
 	[[ "$KIND" =~ ^(human|agent)$ ]] || die "--kind must be human or agent"
 	[[ "$ROLES" =~ ^(member|maintainer)(,(member|maintainer))*$ ]] || die "--roles: member and/or maintainer"
 	[[ "$EXPIRES_DAYS" =~ ^[0-9]+$ ]] || die "--expires-days must be a number"
-	[[ -z "$EMAIL" || "$EMAIL" =~ ^[^[:space:],\"]+@[^[:space:],\"]+$ ]] || die "--email looks invalid"
-	[[ -z "$GITHUB" || "$GITHUB" =~ ^[A-Za-z0-9-]{1,39}$ ]] || die "--github looks invalid"
+	[[ -z "$EMAIL" ]] || valid_email "$EMAIL" || die "--email must be a plain address (no wildcards, commas or spaces)"
+	[[ -z "$GITHUB" ]] || valid_github "$GITHUB" || die "--github looks invalid"
 	[[ -z "$OPERATOR" ]] || valid_handle "$OPERATOR" || die "--operator must be a team handle"
 	if [[ "$KIND" == agent && -z "$OPERATOR" ]]; then die "agents need --operator <human handle>"; fi
 }
@@ -227,7 +244,7 @@ gen_allowed_signers() {
 		[[ -n "$h" ]] || continue
 		y="$MEMBERS/$h/member.yaml"
 		principals="$h"
-		if [[ -n "$(field "$y" email)" ]]; then principals="$h,$(field "$y" email)"; fi
+		if valid_email "$(field "$y" email)"; then principals="$h,$(field "$y" email)"; fi
 		printf '%s namespaces="%s" %s\n' "$principals" "$SIGNER_NAMESPACES" "$(awk '{print $1, $2}' "$MEMBERS/$h/ssh.pub")"
 	done < <(active_members)
 }
@@ -256,9 +273,11 @@ cmd_update() {
 	mkdir -p "$MEMBERS"
 	gen_allowed_signers >"$TEAM/allowed_signers"
 	gen_recipients >"$TEAM/recipients.txt"
+	local before=""
+	before="$(cat "$TEAM/SHA256SUMS" 2>/dev/null || true)"
 	gen_sums >"$TEAM/SHA256SUMS"
 	ok "regenerated team/allowed_signers, team/recipients.txt, team/SHA256SUMS"
-	if [[ -f "$TEAM/SHA256SUMS.sig" ]]; then warn "team/SHA256SUMS changed; a maintainer must re-run sign-sums"; fi
+	if [[ -f "$TEAM/SHA256SUMS.sig" && "$before" != "$(cat "$TEAM/SHA256SUMS")" ]]; then warn "team/SHA256SUMS changed; a maintainer must re-run sign-sums"; fi
 }
 
 # ---------- verify ----------
@@ -274,6 +293,11 @@ verify_member() {
 	[[ "$(field "$y" kind)" =~ ^(human|agent)$ ]] || err "$h: kind must be human or agent"
 	[[ "$(field "$y" roles)" =~ ^(member|maintainer)(,(member|maintainer))*$ ]] || err "$h: invalid roles"
 	[[ "$(field "$y" status)" =~ ^(active|revoked)$ ]] || err "$h: status must be active or revoked"
+	local em gh
+	em="$(field "$y" email)" gh="$(field "$y" github)"
+	[[ -z "$em" ]] || valid_email "$em" || err "$h: email must be a plain address (no wildcards, commas or spaces)"
+	[[ -z "$gh" ]] || valid_github "$gh" || err "$h: invalid github login"
+	[[ -z "$(field "$y" operator)" ]] || valid_handle "$(field "$y" operator)" || err "$h: operator must be a handle"
 	if [[ "$(field "$y" kind)" == agent ]]; then
 		local op
 		op="$(field "$y" operator)"
@@ -287,22 +311,20 @@ verify_member() {
 	rec="$(cat "$d/age.pub")"
 	[[ "$rec" =~ ^age1[0-9a-z]{58}$ ]] || err "$h: age.pub must hold exactly one classic age1 recipient"
 	[[ "$(field "$y" age_recipient)" == "$rec" ]] || err "$h: age_recipient does not match age.pub"
-	[[ "$(awk '{print $1}' "$d/ssh.pub")" == ssh-ed25519 ]] || err "$h: ssh.pub must be ssh-ed25519"
+	[[ "$(wc -l <"$d/ssh.pub")" == 1 ]] && valid_ssh_pub "$(cat "$d/ssh.pub")" || err "$h: ssh.pub must be exactly one ssh-ed25519 key"
 	local fp
 	fp="$(ssh_fp "$d/ssh.pub" 2>/dev/null)" || { err "$h: ssh.pub does not parse"; return; }
 	[[ "$(field "$y" ssh_fingerprint)" == "$fp" ]] || err "$h: ssh_fingerprint does not match ssh.pub ($fp)"
 	local exp
 	exp="$(field "$y" expires)"
-	if ! date -u -d "$exp" +%F >/dev/null 2>&1 || ! date -u -d "$(field "$y" enrolled)" +%F >/dev/null 2>&1; then
+	if ! valid_date "$exp" || ! valid_date "$(field "$y" enrolled)"; then
 		err "$h: enrolled/expires must be YYYY-MM-DD"
 	elif [[ "$exp" < "$(today)" && "$(field "$y" status)" == active ]]; then
 		warn "$h: key expired on $exp (rotate or mark revoked)"
 	fi
 	# Proof of possession: member.yaml is signed by the key it publishes.
-	local tmp
-	tmp="$(mktemp)"
-	printf '%s namespaces="%s" %s\n' "$h" "$NS_TEAM" "$(awk '{print $1, $2}' "$d/ssh.pub")" >"$tmp"
-	local by
+	local tmp by
+	tmp="$(signer_file "$h" "$NS_TEAM")"
 	if ssh-keygen -Y verify -f "$tmp" -I "$h" -n "$NS_TEAM" -s "$d/member.yaml.sig" <"$y" >/dev/null 2>&1; then
 		ok "$h: $(field "$y" kind), $(field "$y" roles), $(field "$y" status), self-signed, $fp"
 	elif [[ "$(field "$y" status)" == revoked ]] && by="$(maintainer_signer "$y" "$d/member.yaml.sig" "$NS_TEAM")" && [[ -n "$by" ]]; then
@@ -378,7 +400,11 @@ maintainer_signer() {
 	while read -r h; do
 		[[ -n "$h" ]] || continue
 		[[ ",$(field "$MEMBERS/$h/member.yaml" roles)," == *,maintainer,* ]] || continue
-		if ssh-keygen -Y verify -f "$TEAM/allowed_signers" -I "$h" -n "$ns" -s "$sig" <"$file" >/dev/null 2>&1; then
+		local sf rc=1
+		sf="$(signer_file "$h" "$ns")"
+		ssh-keygen -Y verify -f "$sf" -I "$h" -n "$ns" -s "$sig" <"$file" >/dev/null 2>&1 && rc=0
+		rm -f "$sf"
+		if ((rc == 0)); then
 			echo "$h"
 			return
 		fi
@@ -421,8 +447,13 @@ cmd_verify_file() {
 	local file="${POSITIONAL[0]:-}"
 	[[ -f "$file" && -f "$file.sig" ]] || die "usage: verify-file <file> --handle H (needs <file>.sig)"
 	valid_handle "$HANDLE_FLAG" || die "--handle is required"
-	ssh-keygen -Y verify -f "$TEAM/allowed_signers" -I "$HANDLE_FLAG" -n "$NS_FILE" -s "$file.sig" <"$file" ||
-		die "signature does NOT verify for $HANDLE_FLAG"
+	[[ -f "$MEMBERS/$HANDLE_FLAG/ssh.pub" && "$(field "$MEMBERS/$HANDLE_FLAG/member.yaml" status)" == active ]] ||
+		die "$HANDLE_FLAG is not an active member"
+	local sf rc=0
+	sf="$(signer_file "$HANDLE_FLAG" "$NS_FILE")"
+	ssh-keygen -Y verify -f "$sf" -I "$HANDLE_FLAG" -n "$NS_FILE" -s "$file.sig" <"$file" || rc=$?
+	rm -f "$sf"
+	((rc == 0)) || die "signature does NOT verify for $HANDLE_FLAG"
 }
 
 cmd_sign_sums() {
@@ -477,7 +508,7 @@ cmd_issue_cert() {
 	[[ "$(field "$y" status)" == active ]] || die "$h is not active"
 	[[ -f "$CA_DIR/team_ca" && -f "$TEAM/ca/team_ca.pub" ]] || die "team CA missing (run ca-init)"
 	principals="$h"
-	if [[ -n "$(field "$y" email)" ]]; then principals="$h,$(field "$y" email)"; fi
+	if valid_email "$(field "$y" email)"; then principals="$h,$(field "$y" email)"; fi
 	serial="$(date -u +%Y%m%d%H%M%S)"
 	cp "$d/ssh.pub" "$d/.cert-input.pub"
 	ssh-keygen -q -s "$CA_DIR/team_ca" -I "$h@password123" -n "$principals" -V "$VALIDITY" -z "$serial" "$d/.cert-input.pub"

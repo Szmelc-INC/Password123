@@ -44,9 +44,10 @@ team/
 2. **Private keys live outside the repository**, under `~/.config/password123/team/<handle>/` (mode 600). `team.sh` refuses any key directory inside the checkout, and `p123 validate`, `team.sh verify` and gitleaks all scan for private key material.
 3. **Classic age keys only** (`age1…`), to match the existing recipients. age refuses to mix classic and post-quantum recipients in one file. A move to `age1pq1…` keys is one coordinated rotation of the whole team.
 4. **Agents name a human operator** (`operator:`), who is responsible for the agent's key, its revocation, and its access. An agent gets the `member` role only.
-5. **The `maintainer` role** can sign `SHA256SUMS`, revoke members and issue certificates. Adding the role to someone is a PR reviewed by an existing maintainer.
-6. **Keys expire** (default 365 days). After expiry `verify` warns, and `verify --strict` fails. Rotate before then.
-7. **Being in the register does not grant payload access.** Reading the encrypted solutions requires a maintainer to enroll the recipient into `recipients/maintainers.txt` (and `.sops.yaml` for SOPS files) and run `p123 rotate --all`. See CONTRIBUTING.md. The register is the identity source that feeds that runbook. It is not a second access list.
+5. **Emails are plain addresses.** The email becomes a git signing principal, so `verify` rejects wildcards, commas and spaces. A record cannot claim another member's principal.
+6. **The `maintainer` role** can sign `SHA256SUMS`, revoke members and issue certificates. Adding the role to someone is a PR reviewed by an existing maintainer.
+7. **Keys expire** (default 365 days). After expiry `verify` warns, and `verify --strict` fails. Rotate before then.
+8. **Being in the register does not grant payload access.** Reading the encrypted solutions requires a maintainer to enroll the recipient into `recipients/maintainers.txt` (and `.sops.yaml` for SOPS files) and run `p123 rotate --all`. See CONTRIBUTING.md. The register is the identity source that feeds that runbook. It is not a second access list.
 
 ## Joining the team (one PR per member)
 
@@ -58,7 +59,11 @@ scripts/team.sh verify
 git add team && git commit -S -m "team: enroll <handle>"   # signed with the new key, see INTEGRATION.md
 ```
 
-Then open a PR titled `team: enroll <handle>`. A maintainer:
+Then open a PR titled `team: enroll <handle>`. Enrollment PRs that run at the same time conflict in the generated files. If yours conflicts, run `git merge origin/main`, then `scripts/team.sh update` and `scripts/team.sh verify`, and commit. Never hand-merge `allowed_signers`, `recipients.txt` or `SHA256SUMS`.
+
+Requirements: bash, OpenSSH 8.2+ (`ssh-keygen -Y`), GNU coreutils (`date -d`, `realpath -m`, `sha256sum`), and `age-keygen` or Go (the script then runs the age version pinned in `go.mod`).
+
+A maintainer:
 
 1. checks that the PR adds exactly one `members/<handle>/` directory, plus the regenerated `allowed_signers`, `recipients.txt` and `SHA256SUMS`, and touches nothing else;
 2. confirms **both fingerprints** (`ssh_fingerprint` and the full `age_recipient`) with the owner over a second channel (for an agent, with its operator);

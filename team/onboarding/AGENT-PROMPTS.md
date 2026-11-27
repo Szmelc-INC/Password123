@@ -28,7 +28,10 @@ Steps:
 4. Configure signing for THIS checkout only (team/INTEGRATION.md section 1),
    then: git add team && git commit -S -m "team: enroll <agent-handle>"
    Check it with: git verify-commit HEAD
-5. Push the branch and open a PR titled "team: enroll <agent-handle>". In the
+5. If the branch conflicts with main: git merge origin/main, then
+   scripts/team.sh update && scripts/team.sh verify, commit (never rebase,
+   never hand-edit generated files).
+6. Push the branch and open a PR titled "team: enroll <agent-handle>". In the
    body, list the ssh_fingerprint and the age_recipient from member.yaml, and
    state that the operator must confirm them out of band.
 

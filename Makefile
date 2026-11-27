@@ -3,7 +3,7 @@ VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
 LDFLAGS := -X github.com/Szmelc-INC/Password123/internal/cli.Version=$(VERSION)
 PREFIX  ?= /usr/local
 
-.PHONY: build test validate vectors site serve bundle portal-test completions install clean team-verify team-update
+.PHONY: build test validate vectors site serve bundle portal-test completions install clean team-verify team-update team-test
 
 build:
 	go build -trimpath -ldflags "$(LDFLAGS)" -o p123 ./cmd/p123
@@ -19,6 +19,9 @@ team-verify:
 
 team-update:
 	bash scripts/team.sh update
+
+team-test:
+	bash scripts/team_test.sh
 
 vectors: build
 	./p123 vectors verify
