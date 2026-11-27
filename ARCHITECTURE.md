@@ -518,6 +518,10 @@ For a raw `.age` payload:
 
 Rotation protects future versions. It cannot revoke old plaintext, old keys, or ciphertext copies that a former recipient already has. Rewriting Git history also cannot erase copies held by forks, clones, caches, or backups.
 
+### 7.5a Team Key Register
+
+Team identities live in `team/` (spec: [team/README.md](team/README.md)). Each member, human or agent, publishes a classic age recipient for encryption and a separate ed25519 SSH key for signing and authorization. Each `member.yaml` is signed by the member's own SSH key as proof of possession, and an optional team SSH CA issues short-lived certificates. Generated `allowed_signers`, `recipients.txt` and `SHA256SUMS` are checked in CI by `scripts/team.sh verify`. The register is the identity source for §7.3. It does not grant payload access by itself.
+
 ### 7.6 Backups and Key Loss
 
 If every copy of a private identity is lost, the matching ciphertext may be permanently unrecoverable. There is no magic administrator override in age.

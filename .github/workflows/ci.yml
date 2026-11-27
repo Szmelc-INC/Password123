@@ -28,6 +28,10 @@ jobs:
         run: go run github.com/rhysd/actionlint/cmd/actionlint@v1.7.12 -color=false
       - name: gofmt
         run: test -z "$(gofmt -l cmd internal)" || { gofmt -l cmd internal; exit 1; }
+      - name: team key register (records, signatures, checksums)
+        run: |
+          shellcheck -S warning scripts/team.sh
+          bash scripts/team.sh verify --no-color
       - name: go vet
         run: go vet ./cmd/... ./internal/...
       - name: go test (all vectors, including the 10k accumulated ML-KEM run)

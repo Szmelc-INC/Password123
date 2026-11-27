@@ -37,6 +37,10 @@ shred -u ~/private-work/02-new-mode.json                # or your platform's sec
 p123 validate && p123 pages build                       # the site must contain ciphertext only
 ```
 
+## Runbook: join the team (keys for signing, encryption, authorization)
+
+Every member, human or agent, registers official keypairs in [`team/`](team/README.md) with one PR: `scripts/team.sh keygen <handle>`, then `scripts/team.sh verify`. Only public keys enter the repository. Agents use [team/onboarding/AGENT-PROMPTS.md](team/onboarding/AGENT-PROMPTS.md), and [team/INTEGRATION.md](team/INTEGRATION.md) covers git signing, file signatures, age and SSH. Registration does not grant payload access: use the next runbook with the member's `age_recipient`.
+
 ## Runbook: enroll a recipient
 
 1. Receive the new **public** recipient (`age1...` or `age1pq1...`) through a trusted channel and confirm it with its owner over a second channel.
